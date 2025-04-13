@@ -3,12 +3,23 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import ConfirmationModal from '../../reusables/ConfirmationModal';
 
 const AddPages = () => {
   const editorRef = useRef(null);
   const [editorContent, setEditorContent] = useState('');
   const [titleInput,setTitleInput]=useState("")
+  const [isModalOpen,setIsModalOpen]=useState(false)
 
+
+  const [parent,setParent]=useState('None')
+  const [isParentDropdownOpen,setIsParentDropdownOpen]=useState(false)
+
+  const parentOptions = [
+    { id: 0, name: 'None' }, 
+    { id: 1, name: 'Home' },
+    { id: 2, name: 'About us' }
+  ];
   const navigate = useNavigate();
 
   const parseContent = (html) => {
@@ -72,6 +83,32 @@ const AddPages = () => {
       setEditorContent(content);
     }
   };
+
+  const handlePublishclick=()=>{
+    setIsModalOpen(true);
+  }
+
+  const handleConfirmPublish=()=>{
+    setIsModalOpen(false);
+    handleSubmit('Published');
+
+  };
+
+  const handleCancelModal=()=>{
+    setIsModalOpen(false);
+  };
+
+  const toggleParentDropdown=()=>{
+ if (parent === 'None') {
+      setIsParentDropdownOpen(!isParentDropdownOpen);
+    }  };
+
+  const selectParentOption=(option)=>{
+    setParent(option);
+    setIsParentDropdownOpen(false);
+  };
+  
+
   return (
     <div className="h-screen w-full p-4 flex">
       <form onSubmit={handleSubmit} className="h-full w-3/4 flex flex-col shadow-lg">
@@ -113,8 +150,7 @@ const AddPages = () => {
         <button
           type="text"
           className="bg-indigo-500 text-white px-6 py-2 rounded mt-5 ml-8"
-          onClick={()=>handleSubmit('Published')}
-
+        onClick={handlePublishclick}
         >
           Publish
         </button>
@@ -131,9 +167,49 @@ const AddPages = () => {
               <p className="text-sm text-gray-500">Slug: /{slug}</p>
               <p className="text-sm text-gray-500">URL: http://localhost:5173/{slug}</p>
             </div>
+
+            <div className="relative mt-4">
+
+              <div>
+              <label className="text-sm text-gray-700">
+  Status <span className="ml-8">Draft</span>
+</label>
+    
+              </div>
+  <div 
+    className="cursor-pointer"
+    onClick={() => setIsParentDropdownOpen(!isParentDropdownOpen)}
+  >
+<label className="text-sm text-gray-700">
+  Parent <span className="ml-8">{parent}</span>
+</label>
+  </div>
+  
+  {isParentDropdownOpen && (
+    <div className='absolute left-0 mt-1 bg-white z-10 border shadow-lg w-full'>
+      {parentOptions.map((item) => (
+        <p
+          key={item.id}
+          className='text-sm px-2 py-1 cursor-pointer hover:bg-gray-100'
+          onClick={() => selectParentOption(item.name)}
+        >
+          {item.name}
+        </p>
+      ))}
+    </div>
+  )}
+</div>
+
         </div>
       </div>
+      <ConfirmationModal
+      isOpen={isModalOpen}
+      onConfirm={handleConfirmPublish}
+      onCancel={handleCancelModal}
+      message="Are you sure you want to publish this page"
+      />
     </div>
+
   );
 };
 

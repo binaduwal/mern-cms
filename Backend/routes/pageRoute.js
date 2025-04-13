@@ -4,9 +4,9 @@ const router = express.Router();
 
 router.post('/create', async (req, res) => {
   try {
-    const { title, content, status} = req.body;
+    const { title, content, status,parent} = req.body;
     const slug = title.toLowerCase().replace(/\s+/g, '-');
-    const newPage = new Page({ title, slug, content,status });
+    const newPage = new Page({ title, slug, content,status, parent });
     await newPage.save();
     res.status(201).json(newPage);
   } catch (err) {
@@ -36,11 +36,11 @@ router.get('/:slug', async (req, res) => {
 
 router.put('/edit/:slug', async (req, res) => {
   try {
-    const { title, content,status } = req.body;
+    const { title, content, status, parent } = req.body;
     const slug = title.toLowerCase().replace(/\s+/g, '-');
     const updatedPage = await Page.findOneAndUpdate(
       { slug: req.params.slug },
-      { title, slug, content,status },
+      { title, slug, content,status, parent },
       { new: true }
     );
     if (!updatedPage) return res.status(404).json({ message: 'Page not found' });

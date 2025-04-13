@@ -9,6 +9,10 @@ const pagesItemSchema = new mongoose.Schema({
     enum: ['Draft', 'Published'],
     default: 'Draft'
   },
+  parent: {
+    type: String,
+    default: 'None'
+  }
 },
 { timestamps: true }
 );
