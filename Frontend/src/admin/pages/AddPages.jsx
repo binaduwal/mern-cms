@@ -64,9 +64,10 @@ const AddPages = () => {
         status
       });
       
-      if (!content || content === '<p><br></p>') {
-        alert('Please enter some content');
-        return;
+      if (status === 'Draft') {
+        alert('Page drafted successfully!');
+      } else if (status === 'Published') {
+        alert('Page published successfully!');
       }
       
       navigate('/admin/pages');
