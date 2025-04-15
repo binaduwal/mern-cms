@@ -10,9 +10,11 @@ const pagesItemSchema = new mongoose.Schema({
     default: 'Draft'
   },
   parent: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Pages',
     default: 'None'
-  }
+  },
+  image: { type: String },
 },
 { timestamps: true }
 );
