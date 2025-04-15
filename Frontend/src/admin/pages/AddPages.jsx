@@ -39,35 +39,6 @@ const AddPages = () => {
 
 
 
-  // const imageHandler = useCallback(() => {
-  //   const input = document.createElement('input');
-  //   input.setAttribute('type', 'file');
-  //   input.setAttribute('accept', 'image/*');
-  //   input.click();
-  
-  //   input.onchange = async () => {
-  //     const file = input.files[0];
-  //     if (!file) return;
-  
-  //     try {
-  //       const formData = new FormData();
-  //       formData.append('image', file);
-  
-  //       const res = await axios.post('http://localhost:3000/pages/upload', formData, {
-  //         headers: { 'Content-Type': 'multipart/form-data' }
-  //       });
-  
-  //       const editor = editorRef.current.getEditor();
-  //       const range = editor.getSelection();
-  //       editor.insertEmbed(range.index, 'image', res.data.imageUrl);
-  //       editor.setSelection(range.index + 1);
-  //     } catch (err) {
-  //       console.error('Upload failed:', err);
-  //       alert(`Image upload failed: ${err.response?.data?.message || err.message}`);
-  //     }
-  //   };
-  // }, []);
-
   const imageHandler = useCallback(() => {
     const input = document.createElement('input');
     input.setAttribute('type', 'file');

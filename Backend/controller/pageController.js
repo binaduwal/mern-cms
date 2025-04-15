@@ -12,6 +12,7 @@ exports.createPage = async (req, res) => {
       content,
       status,
       parent: parent || null,
+      image
     });
 
     await newPage.save();
@@ -52,6 +53,7 @@ exports.updatePage = async (req, res) => {
         content,
         status,
         parent: parent === 'None' ? null : parent,
+        image,
       },
       { new: true }
     );
