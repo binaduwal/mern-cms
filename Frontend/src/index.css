@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Public+Sans:ital,wght@0,100..900;1,100..900&family=Sofia+Sans+Semi+Condensed:ital,wght@0,1..1000;1,1..1000&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Primary Font: Roboto */
+  h1 {
+      @apply font-bold text-[36px] md:text-[42px] lg:text-[48px] text-[#000000E0] font-roboto;
+  }
+  h2 {
+      @apply font-bold text-[32px] lg:text-[36px] text-[#000000E0] font-roboto;
+  }
+  h3 {
+      @apply font-bold text-[26px] lg:text-[30px] text-[#000000E0] font-roboto;
+  }
+  h4 {
+      @apply font-semibold text-[20px] lg:text-[24px] text-[#000000A6] font-roboto;
+  }
+  h5 {
+      @apply font-semibold text-[18px] lg:text-[20px] text-[#000000A6] font-roboto;
+  }
+  h6 {
+      @apply font-semibold text-[16px] lg:text-[18px] text-[#000000A6] font-roboto;
+  }
+
+  /* Secondary Font: Lato for Subheadings and Captions */
+  .subheading {
+      @apply font-semibold text-[18px] lg:text-[20px] text-[#000000E0] font-lato;
+  }
+  .caption {
+      @apply font-normal text-[13px] lg:text-[14px] text-[#000000A6] font-noto_sans;
+  }
+
+  /* Body Font: Noto Sans for regular paragraphs and small text */
+  p {
+    @apply font-normal text-[15px] lg:text-[16px] text-black font-noto_sans;
+  }
+    .small-text {
+      @apply font-normal text-[12px] text-[#000000A6] font-noto_sans;
+  }
+
+  /* Button styling */
+  button {
+      @apply font-semibold font-jamjure text-[14px] lg:text-[15px] text-white bg-indigo-400 rounded-sm px-[1.2rem] py-3;
+  }
+}
+
+
+@layer components {
+    /* Custom style for dots */
+    .custom-dots .slick-dots li button:before {
+      @apply w-3 h-3 bg-gray-400 rounded-full; /* Change dot size and color */
+    }
+  
+    .custom-dots .slick-dots li.slick-active button:before {
+      @apply bg-indigo-500; /* Change active dot color */
+    }
+  
+    /* Optional: Adjust dot position */
+    .custom-dots .slick-dots {
+      @apply mt-4; /* Adds margin to move dots down */
+    }
+  }
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 0px; /* Width of the scrollbar */
+  }
+  
+  ::-webkit-scrollbar-track {
+    background-color:transparent;
+    width:0px;
+    height:4px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background-color: rgb(129 140 248); /* Darker color for the scrollbar handle */
+    border-radius: 10px; /* Rounded corners of the handle */
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #484848; /* Darker color on hover */
+  }

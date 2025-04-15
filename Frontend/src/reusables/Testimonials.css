@@ -1,0 +1,7 @@
+/* Ensure slider item width doesn't stretch */
+.testimonial-slider .slick-slide {
+    padding: 0px 14px; /* Adjust the padding to create space between slides */
+}
+
+
+

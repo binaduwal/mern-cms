@@ -98,7 +98,7 @@ const AddPages = () => {
         // Insert image and update selection
         editor.insertEmbed(range.index, 'image', res.data.imageUrl);
         editor.setSelection(range.index + 1, 0, 'silent');
-        editor.focus(); // Ensure editor regains focus
+        editor.focus();
       } catch (err) {
         console.error('Upload failed:', err);
         alert(`Image upload failed: ${err.response?.data?.message || err.message}`);

@@ -1,0 +1,21 @@
+/* Hides the default arrows */
+/* .slick-prev,
+.slick-next {
+  display: none !important;
+} */
+
+/* Custom style for the non-active dots */
+.slick-dots li button:before {
+  font-size: 12px; /* Change dot size */
+  color: white !important; /* Set default non-active dot color*/
+}
+
+/* Custom style for the active dot */
+.slick-dots li.slick-active button:before {
+  color: rgb(129 140 248) !important; 
+}
+
+/* Adjust dot position and spacing */
+.slick-dots {
+  bottom: 80px; 
+}

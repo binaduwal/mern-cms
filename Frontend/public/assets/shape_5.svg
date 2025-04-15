@@ -1,0 +1,32 @@
+<svg width="301" height="200" viewBox="0 0 301 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="100" height="100" fill="#3273BB"/>
+<circle cx="50" cy="150" r="50" fill="#93C5FD"/>
+<path d="M101 100H201V200L148 148.5L101 100Z" fill="#3273BB"/>
+<path d="M201 0H301V101L201 200V0Z" fill="#93C5FD"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M151 100C178.614 100 201 77.6142 201 50C201 22.3858 178.614 0 151 0C123.386 0 101 22.3858 101 50C101 77.6142 123.386 100 151 100ZM151 80C167.569 80 181 66.5685 181 50C181 33.4315 167.569 20 151 20C134.431 20 121 33.4315 121 50C121 66.5685 134.431 80 151 80Z" fill="#468CDA"/>
+<path d="M249.5 150L301 100V190C301 195.523 296.523 200 291 200H201L249.5 150Z" fill="#3273BB"/>
+<mask id="mask0_639_213" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="301" height="200">
+<rect width="100" height="100" fill="#3273BB"/>
+<circle cx="50" cy="150" r="50" fill="#93C5FD"/>
+<path d="M101 100H201V200L148 148.5L101 100Z" fill="#3273BB"/>
+<path d="M201 0H301V101L201 200V0Z" fill="#93C5FD"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M151 100C178.614 100 201 77.6142 201 50C201 22.3858 178.614 0 151 0C123.386 0 101 22.3858 101 50C101 77.6142 123.386 100 151 100ZM151 80C167.569 80 181 66.5685 181 50C181 33.4315 167.569 20 151 20C134.431 20 121 33.4315 121 50C121 66.5685 134.431 80 151 80Z" fill="#468CDA"/>
+<path d="M249.5 150L301 100V190C301 195.523 296.523 200 291 200H201L249.5 150Z" fill="#3273BB"/>
+</mask>
+<g mask="url(#mask0_639_213)">
+<circle cx="131" cy="130" r="191.5" stroke="black" stroke-opacity="0.25"/>
+<circle cx="102.5" cy="142.5" r="198" stroke="black" stroke-opacity="0.25"/>
+<circle cx="94" cy="163" r="196.5" stroke="black" stroke-opacity="0.25"/>
+<circle cx="89.5" cy="181.5" r="183" stroke="black" stroke-opacity="0.25"/>
+<circle cx="70.5" cy="197.5" r="183" stroke="black" stroke-opacity="0.25"/>
+<circle cx="51.5" cy="213.5" r="183" stroke="black" stroke-opacity="0.25"/>
+<circle cx="32.5" cy="229.5" r="183" stroke="black" stroke-opacity="0.25"/>
+<circle cx="13.5" cy="245.5" r="183" stroke="black" stroke-opacity="0.25"/>
+<circle cx="-5.5" cy="261.5" r="183" stroke="black" stroke-opacity="0.25"/>
+<circle cx="-24.5" cy="277.5" r="183" stroke="black" stroke-opacity="0.25"/>
+<circle cx="-43.5" cy="293.5" r="183" stroke="black" stroke-opacity="0.25"/>
+<circle cx="-62.5" cy="309.5" r="183" stroke="black" stroke-opacity="0.25"/>
+<circle cx="-81.5" cy="325.5" r="183" stroke="black" stroke-opacity="0.25"/>
+<circle cx="-100.5" cy="341.5" r="183" stroke="black" stroke-opacity="0.25"/>
+</g>
+</svg>

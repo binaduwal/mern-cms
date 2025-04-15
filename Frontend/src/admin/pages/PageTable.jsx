@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import SearchBar from '../../reusables/SearchBar';
-import { CiEdit } from "react-icons/ci";
-import { RiDeleteBin6Line } from "react-icons/ri";
-import DeleteConfirmationModal from '../../reusables/DeleteConfirmationModal';
-
+import { FaRegEdit } from "react-icons/fa";
+import { AiOutlineDelete } from "react-icons/ai";
+import ConfirmationModal from '../../reusables/ConfirmationModal';
 const PageTable = () => {
   const [pages, setPages] = useState([]);
   const navigate = useNavigate();
@@ -25,7 +24,7 @@ const PageTable = () => {
   }, []);
 
   const handleEdit = (slug) => {
-    console.log('Edit page with slug:', slug);
+    navigate(`/admin/pages/edit/${slug}`);
   };
 
   const handleAddPage = () => {
@@ -94,7 +93,14 @@ const PageTable = () => {
           </thead>
 
           <tbody>
-            {pages
+          {pages.filter(page => page.title.toLowerCase().includes(searchTerm.toLowerCase())).length === 0 ? (
+           <tr>
+           <td colSpan="4" className="text-center text-gray-500 py-6">
+             No matching results found.
+           </td>
+         </tr>
+       ) : (   
+            pages
             .filter(page=>page.title.toLowerCase().includes(searchTerm.toLowerCase()))
             .map((page, index) => (
               <tr key={index} className="border-t">
@@ -107,7 +113,7 @@ const PageTable = () => {
                         {page.content
                           ? new DOMParser()
                               .parseFromString(page.content, 'text/html')
-                              .body.textContent.slice(0, 100) + '...'
+                              .body.textContent.slice(0, 40) + '...'
                           : 'No content available'}
                       </div>
                     </div>
@@ -118,58 +124,74 @@ const PageTable = () => {
                   <span className="text-sm text-gray-700">{page.status}</span>
                 </td>
 
-                <td className="px-4 py-3">
+<td className="px-4 py-3">
+  <div className="text-sm text-gray-600">
+  <span className="text-xs font-semibold">Created at:</span>
+  <br/>
+    {new Intl.DateTimeFormat('en-GB', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    }).format(new Date(page.createdAt))}
+    
+    {page.updatedAt && 
+      new Date(page.updatedAt).getTime() !== new Date(page.createdAt).getTime() && (
+        <>
+          <br />
+          <span className="text-xs font-semibold">Last Modified:</span>
+          <br />
+          {new Intl.DateTimeFormat('en-GB', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true,
+          }).format(new Date(page.updatedAt))}
+        </>
+      )
+    }
+  </div>
+</td>
 
-              <div className="text-sm text-gray-600">
-                Created at:
-                <br/>
-                 {new Intl.DateTimeFormat('en-GB', {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  hour12: true,}).format(new Date(page.createdAt))}
-                {/* <br />
-                Updated: {new Intl.DateTimeFormat('en-GB', {
-                  year: 'numeric',
-                  month: '2-digit',
-                  day: '2-digit',
-                }).format(new Date(page.updatedAt))} */}
-              </div>
-      </td>
+
 
                 <td className="px-4 py-3">
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleEdit(page.slug)}
-                      className="bg-transparent text-black hover:text-indigo-800 font-bold py-1 px-3 rounded text-xl"
+                      className="bg-transparent text-gray-700 hover:text-indigo-800 font-bold py-1 px-3 rounded text-xl"
                     >
-                      <CiEdit />
+                      <FaRegEdit />
                     </button>
                     <button
                       onClick={() => {
                         setDeleteData(page.slug);
                         setShowDeleteConfirmation(true);
                       }}
-                      className="bg-transparent text-black hover:text-red-700 font-bold py-1 px-3 rounded text-xl"
+                      className="bg-transparent text-gray-700 hover:text-red-700 font-bold py-1 px-3 rounded text-xl"
                     >
-                      <RiDeleteBin6Line />
+                      <AiOutlineDelete />
                     </button>
                   </div>
                 </td>
 
 
               </tr>
-            ))}
+            ))
+            )}
           </tbody>
         </table>
       </div>
 
-      <DeleteConfirmationModal
+      <ConfirmationModal
         isOpen={showDeleteConfirmation}
-        onClose={() => setShowDeleteConfirmation(false)}
+        onCancel={() => setShowDeleteConfirmation(false)}
         onConfirm={handleDelete}
+        message="Are you sure you want to delete this page"
       />
     </div>
   );
