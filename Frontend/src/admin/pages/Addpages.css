@@ -1,9 +1,12 @@
 .ql-editor img,
 .prose img {
-  max-width: 50% !important;
-  height: auto !important;
-  margin: 0 auto;
-  border: 1px solid #ddd; 
-  padding: 4px;
-}
+        max-width: 50% !important;
+        height: auto !important;
+        border: 1px solid #ddd;
+        padding: 4px;
+        float: left;
+        margin: 0 1rem 1rem 0;
+      }
+
+
 

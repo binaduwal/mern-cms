@@ -5,6 +5,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import ConfirmationModal from '../../reusables/ConfirmationModal';
 import './Addpages.css'
+import '../../components/CustomImageBlot'
 
 const AddPages = () => {
   const editorRef = useRef(null);
@@ -18,21 +19,67 @@ const AddPages = () => {
   const [selectedParentId, setSelectedParentId] = useState(null);
   const [isParentDropdownOpen, setIsParentDropdownOpen] = useState(false);
 
+  // useEffect(() => {
+  //   const fetchPages = async () => {
+  //     try {
+  //       const res = await axios.get('http://localhost:3000/pages/all');
+  //       const options = Array.isArray(res.data)
+  //         ? [{ _id: null, title: 'None' },
+  //            ...res.data.map(p => ({ _id: p._id, title: p.title }))]
+  //         : [{ _id: null, title: 'None' }];
+  //       setParentOptions(options);
+  //     } catch (err) {
+  //       console.error('Error fetching pages:', err);
+  //       setParentOptions([{ _id: null, title: 'None' }]);
+  //     }
+  //   };
+  //   fetchPages();
+  // }, []);
+
   useEffect(() => {
-    const fetchPages = async () => {
-      try {
-        const res = await axios.get('http://localhost:3000/pages/all');
-        const options = Array.isArray(res.data)
-          ? [{ _id: null, title: 'None' },
-             ...res.data.map(p => ({ _id: p._id, title: p.title }))]
-          : [{ _id: null, title: 'None' }];
-        setParentOptions(options);
-      } catch (err) {
-        console.error('Error fetching pages:', err);
-        setParentOptions([{ _id: null, title: 'None' }]);
-      }
-    };
-    fetchPages();
+    if (editorRef.current) {
+      const quill = editorRef.current.getEditor();
+      const container = quill.container;
+
+      let draggedIndex = null;
+
+      const handleDragStart = (e) => {
+        if (e.target.tagName === 'IMG') {
+          const blot = Quill.find(e.target);
+          draggedIndex = blot.offset(quill.scroll);
+        }
+      };
+
+      const handleDrop = (e) => {
+        e.preventDefault();
+        if (draggedIndex === null) return;
+
+        const range = quill.getSelection();
+        if (!range) return;
+
+        const delta = quill.getContents();
+        const op = delta.ops[draggedIndex];
+        
+        if (op && op.insert && op.insert.image) {
+          const attributes = op.attributes || {};
+          quill.deleteText(draggedIndex, 1);
+          quill.insertEmbed(range.index, 'image', op.insert.image, attributes);
+          quill.setSelection(range.index + 1, 0, 'silent');
+        }
+
+        draggedIndex = null;
+      };
+
+      container.addEventListener('dragstart', handleDragStart);
+      container.addEventListener('drop', handleDrop);
+      container.addEventListener('dragover', (e) => e.preventDefault());
+
+      return () => {
+        container.removeEventListener('dragstart', handleDragStart);
+        container.removeEventListener('drop', handleDrop);
+        container.removeEventListener('dragover', (e) => e.preventDefault());
+      };
+    }
   }, []);
 
   const selectedParent = parentOptions.find(p => p._id === selectedParentId)?.title || 'None';
@@ -250,3 +297,4 @@ const AddPages = () => {
 };
 
 export default AddPages;
+
