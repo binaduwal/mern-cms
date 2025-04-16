@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import ConfirmationModal from '../../reusables/ConfirmationModal';
+import './Addpages.css'
 
 const AddPages = () => {
   const editorRef = useRef(null);
@@ -60,13 +61,11 @@ const AddPages = () => {
         const editor = editorRef.current.getEditor();
         let range = editor.getSelection();
         
-        // Fallback to end of document if no selection
         if (!range) {
           const length = editor.getLength();
           range = { index: length, length: 0 };
         }
   
-        // Insert image and update selection
         editor.insertEmbed(range.index, 'image', res.data.imageUrl);
         editor.setSelection(range.index + 1, 0, 'silent');
         editor.focus();
