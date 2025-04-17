@@ -13,15 +13,16 @@ const PageTable = () => {
   const [DeleteData, setDeleteData] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:3000/pages/all')
-      .then((response) => { 
-        console.log('Fetched pages:', response.data);
-        setPages(response.data);
-      })
-      .catch((error) => {
-        console.error('Error fetching pages:', error);
-      });
-  }, []);
+  axios.get('http://localhost:3000/pages/all')
+    .then((res) => {
+      const sanitized = res.data.map(page => ({
+        ...page,
+        content: page.content.replace(/<button[\s\S]*?<\/button>/g, '')
+      }));
+      setPages(sanitized);
+    })
+    .catch((err) => console.error('Error fetching pages:', err));
+ }, []);
 
   const handleEdit = (slug) => {
     navigate(`/admin/pages/edit/${slug}`);

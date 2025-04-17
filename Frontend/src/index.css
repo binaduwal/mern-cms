@@ -87,3 +87,8 @@
   ::-webkit-scrollbar-thumb:hover {
     background-color: #484848; /* Darker color on hover */
   }
+
+
+  .prose img {
+    width: auto !important;
+    max-width: 100% !important;  }

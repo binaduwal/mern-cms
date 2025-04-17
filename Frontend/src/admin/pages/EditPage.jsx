@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef,useCallback ,useMemo} from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import ConfirmationModal from '../../reusables/ConfirmationModal';
+import '../../components/CustomImageBlot'
 
 const EditPage = () => {
   const { slug } = useParams();
@@ -16,6 +17,43 @@ const EditPage = () => {
   const [parentOptions, setParentOptions] = useState([]);
   const [status, setStatus] = useState('Draft');
   const [originalSlug, setOriginalSlug] = useState('');
+
+
+  const imageHandler = useCallback(() => {
+    const input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
+    input.click();
+  
+    input.onchange = async () => {
+      const file = input.files[0];
+      if (!file) return;
+  
+      try {
+        const formData = new FormData();
+        formData.append('image', file);
+  
+        const res = await axios.post('http://localhost:3000/pages/upload', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+  
+        const editor = editorRef.current.getEditor();
+        let range = editor.getSelection();
+        
+        if (!range) {
+          const length = editor.getLength();
+          range = { index: length, length: 0 };
+        }
+  
+        editor.insertEmbed(range.index, 'image', res.data.imageUrl);
+        editor.setSelection(range.index + 1, 0, 'silent');
+        editor.focus();
+      } catch (err) {
+        console.error('Upload failed:', err);
+        alert(`Image upload failed: ${err.response?.data?.message || err.message}`);
+      }
+    };
+  }, []);
 
 
   const navigate = useNavigate();
@@ -57,14 +95,17 @@ const EditPage = () => {
       const content = editorContent;
       const newSlug = titleVal.toLowerCase().replace(/\s+/g, '-');
 
-      await axios.put(`http://localhost:3000/pages/edit/${originalSlug}`, {
-        title: titleVal,
-        content,
-        status: newStatus,
-        parent,
-        slug: newSlug
-      });
 
+      await axios.put(
+          `http://localhost:3000/pages/edit/${originalSlug}`,   
+          {
+            title: titleVal,
+            content: cleanContent,   
+            status: newStatus,
+            parent,
+            slug: newSlug
+          }
+        );
       
       setTimeout(() => navigate('/admin/pages'), 2000);
     } catch (error) {
@@ -72,16 +113,21 @@ const EditPage = () => {
     }
   };
 
-  const modules = {
-    toolbar: [
-      ['bold', 'italic', 'underline', 'strike'],
-      ['blockquote', 'code-block'],
-      [{ 'header': 1 }, { 'header': 2 }],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      ['link', 'image'],
-      ['clean']
-    ],
-  };
+  const modules = useMemo(() => ({
+    toolbar: {
+      container: [
+        ['bold', 'italic', 'underline', 'strike'],
+        ['blockquote', 'code-block'],
+        [{ header: 1 }, { header: 2 }],
+        [{ list: 'ordered' }, { list: 'bullet' }],
+        ['link', 'image'],
+        ['clean']
+      ],
+      handlers: {
+        image: imageHandler
+      }
+    }
+  }), [imageHandler]);
 
 // get selected parent title
   const selectedParent = parentOptions.find(p => p._id === parent)?.title || 'None';
@@ -128,7 +174,7 @@ const EditPage = () => {
           onChange={(e) => setTitleInput(e.target.value)}
           required
         />
-        <div className="flex-1 overflow-hidden text-black">
+        <div className="flex-1 overflow-visible text-black">
           <ReactQuill
             theme="snow"
             value={editorContent}
