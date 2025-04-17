@@ -100,7 +100,7 @@ const EditPage = () => {
           `http://localhost:3000/pages/edit/${originalSlug}`,   
           {
             title: titleVal,
-            content: cleanContent,   
+            content: editorContent,   
             status: newStatus,
             parent,
             slug: newSlug

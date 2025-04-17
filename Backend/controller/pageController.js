@@ -2,17 +2,18 @@ const Page = require('../models/pages');
 
 exports.createPage = async (req, res) => {
   try {
-    const { title, content, status, parent } = req.body;
+    const { title, content, status, parent, image } = req.body;
     const slug = title.toLowerCase().replace(/\s+/g, '-');
-    const image = req.file ? `http://localhost:3000/uploads/${req.file.filename}` : null;
-
+    const imageName = image? path.basename(image)  
+    : null;
+    
     const newPage = new Page({
       title,
       slug,
       content,
       status,
       parent: parent || null,
-      image
+      image:imageName
     });
 
     await newPage.save();
@@ -45,6 +46,8 @@ exports.updatePage = async (req, res) => {
   try {
     const { title, content, status, parent,image } = req.body;
     const slug = title.toLowerCase().replace(/\s+/g, '-');
+    const imageName = image ? path.basename(image) : null;
+
     const updatedPage = await Page.findOneAndUpdate(
       { slug: req.params.slug },
       {
@@ -53,7 +56,7 @@ exports.updatePage = async (req, res) => {
         content,
         status,
         parent: parent === 'None' ? null : parent,
-        image,
+        image:imageName,
       },
       { new: true }
     );

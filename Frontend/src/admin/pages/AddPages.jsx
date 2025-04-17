@@ -5,7 +5,6 @@ import ReactQuill from 'react-quill';
 import Quill from 'quill';
 import 'react-quill/dist/quill.snow.css';
 import ConfirmationModal from '../../reusables/ConfirmationModal';
-import './Addpages.css'
 import '../../components/CustomImageBlot'
 
 const AddPages = () => {
@@ -151,15 +150,19 @@ const AddPages = () => {
       return;
     }
     
+    const clean = editorContent.replace(/<button[\s\S]*?<\/button>/g, '');
+
+    const imgMatch = clean.match(/<img[^>]+src="([^"]+)"/);
+  const imageUrl = imgMatch ? imgMatch[1] : null;
 
     try {
       await axios.post('http://localhost:3000/pages/create', {
         title: titleInput.trim(),
-        content: editorContent,
+        content: clean,
         slug,
         status,
         parent: selectedParentId,
-        image:null || ""
+        image:imageUrl
       });
 
       alert(status === 'Draft' ? 'Page drafted successfully!' : 'Page published successfully!');
@@ -208,12 +211,12 @@ const AddPages = () => {
               ]}
               ref={editorRef}
               placeholder="Type here..."
-              className="w-full h-full border-none focus:outline-none"
-              style={{ minHeight: 'calc(100vh - 100px)',
-                 display: 'flex',
-    flexDirection: 'column'
-               }}
-              
+              className="custom-quill-editor"
+              style={{ 
+                minHeight: 'calc(100vh - 100px)',
+                display: 'flex',
+                flexDirection: 'column'
+              }}              
             />
           </div>
         </form>
