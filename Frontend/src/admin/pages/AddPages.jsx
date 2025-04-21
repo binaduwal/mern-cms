@@ -1,11 +1,8 @@
-import React, { useState, useRef, useMemo, useEffect,useCallback } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import ReactQuill from 'react-quill';
-import Quill from 'quill';
-import 'react-quill/dist/quill.snow.css';
 import ConfirmationModal from '../../reusables/ConfirmationModal';
-import '../../components/CustomImageBlot'
+import JoditEditor from 'jodit-react';
 
 const AddPages = () => {
   const editorRef = useRef(null);
@@ -20,140 +17,30 @@ const AddPages = () => {
   const [isParentDropdownOpen, setIsParentDropdownOpen] = useState(false);
 
   useEffect(() => {
-    if (editorRef.current) {
-      const quill = editorRef.current.getEditor();
-      const container = quill.container;
-
-      let draggedIndex = null;
-
-      const handleDragStart = (e) => {
-        if (e.target.tagName === 'IMG') {
-          const blot = Quill.find(e.target);
-          draggedIndex = blot.offset(quill.scroll);
-        }
-      };
-
-      const handleDrop = (e) => {
-        e.preventDefault();
-        if (draggedIndex === null) return;
-        
-        const dropIndex = quill.getSelection()?.index || quill.getLength();
-        
-        const delta = quill.getContents();
-        const op = delta.ops[draggedIndex];
-        
-        if (op && op.insert && op.insert.image) {
-          const attributes = op.attributes || {};
-          quill.deleteText(draggedIndex, 1);
-          quill.insertEmbed(dropIndex, 'image', op.insert.image, attributes);
-          quill.setSelection(dropIndex + 1, 0, 'silent');
-        }
-        
-        draggedIndex = null;
+    const fetchParents = async () => {
+      try {
+        const { data } = await axios.get('http://localhost:3000/pages/all');
+        setParentOptions([{ _id: null, title: 'None' }, ...data]);
+      } catch (err) {
+        console.error('Failed to load parent pages:', err);
       }
-      
-      container.addEventListener('dragstart', handleDragStart);
-      container.addEventListener('drop', handleDrop);
-      container.addEventListener('dragover', (e) => e.preventDefault());
-
-      return () => {
-        container.removeEventListener('dragstart', handleDragStart);
-        container.removeEventListener('drop', handleDrop);
-        container.removeEventListener('dragover', (e) => e.preventDefault());
-      };
-    }
+    };
+    fetchParents();
   }, []);
 
-  const selectedParent = parentOptions.find(p => p._id === selectedParentId)?.title || 'None';
+  const selectedParentTitle =
+    parentOptions.find(p => p._id === selectedParentId)?.title || 'None';
+
   const slug = titleInput.trim().toLowerCase().replace(/\s+/g, '-') || '';
 
-
-
-  const imageHandler = useCallback(() => {
-    const input = document.createElement('input');
-    input.setAttribute('type', 'file');
-    input.setAttribute('accept', 'image/*');
-    input.click();
-  
-    input.onchange = async () => {
-      const file = input.files[0];
-      if (!file) return;
-  
-      try {
-        const formData = new FormData();
-        formData.append('image', file);
-  
-        const res = await axios.post('http://localhost:3000/pages/upload', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
-  
-        const editor = editorRef.current.getEditor();
-        let range = editor.getSelection();
-        
-        if (!range) {
-          const length = editor.getLength();
-          range = { index: length, length: 0 };
-        }
-  
-        editor.insertEmbed(range.index, 'image', res.data.imageUrl);
-        editor.setSelection(range.index + 1, 0, 'silent');
-        editor.focus();
-      } catch (err) {
-        console.error('Upload failed:', err);
-        alert(`Image upload failed: ${err.response?.data?.message || err.message}`);
-      }
-    };
-  }, []);
-  
-
-  const modules = useMemo(() => ({
-    toolbar: {
-      container: [
-        ['bold', 'italic', 'underline', 'strike'],
-        ['blockquote'],
-        [{ header: 1 }, { header: 2 }],
-        [{ list: 'ordered' }, { list: 'bullet' }],
-        ['link', 'image'],
-        ['clean']
-      ],
-      handlers: {
-        image: imageHandler
-      }
-    }
-  }), [imageHandler]);  
-
-  
-  const parseContent = (html) => {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-    const titleElement = doc.querySelector('h1') || doc.querySelector('p');
-    return {
-      title: titleElement?.textContent?.trim() || 'Untitled Page',
-      content: html
-    };
-  };
-
-  const { title } = useMemo(() => parseContent(editorContent), [editorContent]);
-
-  const handleEditorChange = (content) => {
-    setEditorContent(content === '<h1></h1><p>Type here...</p>' ? '<h1></h1>' : content);
-  };
-
-  const selectParent = (parentId) => {
-    setSelectedParentId(parentId);
-    setIsParentDropdownOpen(false);
-  };
-
-  const handleSubmit = async (status) => {
+  const handleSubmit = async status => {
     if (!editorContent || editorContent === '<p><br></p>') {
       alert('Please enter some content');
       return;
     }
-    
     const clean = editorContent.replace(/<button[\s\S]*?<\/button>/g, '');
-
     const imgMatch = clean.match(/<img[^>]+src="([^"]+)"/);
-  const imageUrl = imgMatch ? imgMatch[1] : null;
+    const imageUrl = imgMatch ? imgMatch[1] : null;
 
     try {
       await axios.post('http://localhost:3000/pages/create', {
@@ -162,10 +49,13 @@ const AddPages = () => {
         slug,
         status,
         parent: selectedParentId,
-        image:imageUrl
+        image: imageUrl
       });
-
-      alert(status === 'Draft' ? 'Page drafted successfully!' : 'Page published successfully!');
+      alert(
+        status === 'Draft'
+          ? 'Page drafted successfully!'
+          : 'Page published successfully!'
+      );
       navigate('/admin/pages');
     } catch (err) {
       console.error('Submission error:', err.response?.data || err.message);
@@ -173,19 +63,17 @@ const AddPages = () => {
     }
   };
 
-  const handlePublishClick = () => setIsModalOpen(true);
-  const handleConfirmPublish = () => {
-    setIsModalOpen(false);
-    handleSubmit('Published');
-  };
-  const handleCancelModal = () => setIsModalOpen(false);
-
   return (
     <div className="h-screen w-full p-4 flex">
       {/* Editor Section */}
       <div className="w-3/4 flex flex-col">
         <div className="mb-4 text-sm text-gray-600">
-          <span className="text-gray-400 cursor-pointer" onClick={() => navigate('/admin/pages')}>Pages</span>
+          <span
+            className="cursor-pointer text-gray-400"
+            onClick={() => navigate('/admin/pages')}
+          >
+            Pages
+          </span>
           <span className="mx-1">/</span>
           <span className="font-semibold text-indigo-600">Add</span>
         </div>
@@ -194,29 +82,59 @@ const AddPages = () => {
           <input
             type="text"
             placeholder="Enter title"
-            className="focus:outline-none mb-6 text-2xl"
+            className="mb-6 text-2xl focus:outline-none"
             value={titleInput}
-            onChange={(e) => setTitleInput(e.target.value)}
+            onChange={e => setTitleInput(e.target.value)}
             required
           />
+
           <div className="flex-1 overflow-visible text-black">
-            <ReactQuill
-              theme="snow"
-              value={editorContent}
-              onChange={handleEditorChange}
-              modules={modules}
-              formats={[
-                'header', 'bold', 'italic', 'underline', 'strike',
-                'blockquote', 'list', 'bullet', 'link', 'image'
-              ]}
+            <JoditEditor
               ref={editorRef}
-              placeholder="Type here..."
-              className="custom-quill-editor"
-              style={{ 
-                minHeight: 'calc(100vh - 100px)',
-                display: 'flex',
-                flexDirection: 'column'
-              }}              
+              defaultValue={editorContent}
+              onBlur={newContent => setEditorContent(newContent)}
+              config={{
+                readonly: false,
+                height: 600,
+                uploader: { insertImageAsBase64URI: true },
+                buttons: [
+                  'bold',
+                  'italic',
+                  'underline',
+                  'strikethrough',
+                  '|',
+                  'align',
+                  'font',
+                  'fontsize',
+                  'paragraph',
+                  '|',
+                  'image',
+                  'video',
+                  'table',
+                  '|',
+                  'ul',
+                  'ol',
+                  'outdent',
+                  'indent',
+                  '|',
+                  'undo',
+                  'redo',
+                  'hr',
+                  'eraser',
+                  'copyformat',
+                  '|',
+                  'fullsize',
+                  'selectall',
+                  'source'
+                ],
+                image: {
+                  resize: true,
+                  editMargins: true,
+                  openOnDblClick: true,
+                  editSrc: true,
+                  align: true
+                }
+              }}
             />
           </div>
         </form>
@@ -225,58 +143,77 @@ const AddPages = () => {
       {/* Sidebar Panel */}
       <div className="w-1/4 ml-4 h-full">
         <button
-          type="button"
-          className="bg-indigo-500 text-white px-6 py-2 rounded mt-5 ml-5"
           onClick={() => handleSubmit('Draft')}
+          className="mt-5 ml-5 rounded bg-indigo-500 px-6 py-2 text-white"
         >
           Draft
         </button>
+
         <button
-          type="button"
-          className="bg-indigo-500 text-white px-6 py-2 rounded mt-5 ml-8"
-          onClick={handlePublishClick}
+          onClick={() => setIsModalOpen(true)}
+          className="mt-5 ml-8 rounded bg-indigo-500 px-6 py-2 text-white"
         >
           Publish
         </button>
 
-        <div className="bg-white p-4 shadow-md rounded h-full mt-4 relative">
-          <p className="text-indigo-600 mb-4">Link</p>
+        <div className="relative mt-4 h-full rounded bg-white p-4 shadow-md">
+          <p className="mb-4 text-indigo-600">Link</p>
           <p className="text-sm text-gray-500">Slug: /{slug}</p>
           <p className="text-sm text-gray-500">URL: http://localhost:5173/{slug}</p>
 
           <div className="mt-4">
-            <label className="text-sm text-gray-700 block mb-2">
-              Status <span className="ml-8 text-indigo-500">Draft</span>
+            {/* Status display */}
+            <label className="ml-2 mb-2 block text-sm text-gray-700">
+              Status <span className="text-indigo-500">Draft</span>
             </label>
 
-            <label
-              className="text-sm text-gray-700 block cursor-pointer"
-              onClick={() => setIsParentDropdownOpen(!isParentDropdownOpen)}
-            >
-              Parent <span className="ml-8 text-indigo-500">{selectedParent}</span>
-            </label>
-
-            {isParentDropdownOpen && (
-              <div className="absolute bg-white border shadow-md mt-1 z-20 w-[90%]">
-                {parentOptions.map((item) => (
-                  <p
-                    key={item._id || 'none'}
-                    className="text-sm px-3 py-1 cursor-pointer hover:bg-gray-100"
-                    onClick={() => selectParent(item._id)}
-                  >
-                    {item.title}
-                  </p>
-                ))}
+            {/* Custom Parent dropdown */}
+            <div className="relative">
+              <div
+                className="cursor-pointer rounded px-2 py-1 flex justify-between items-center"
+                onClick={() => setIsParentDropdownOpen(open => !open)}
+              >
+                <span className="text-sm  text-gray-700">
+                Parent <span className="text-indigo-500">{selectedParentTitle}</span>
+                </span>
+                <svg
+                  className="h-4 w-4 text-gray-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M19 9l-7 7-7-7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </div>
-            )}
+
+              {isParentDropdownOpen && (
+                <div className="absolute z-10 mt-1 w-full rounded border bg-white shadow-lg">
+                  {parentOptions.map(opt => (
+                    <div
+                      key={opt._id ?? 'none'}
+                      className="px-3 py-1 text-sm hover:bg-gray-100 cursor-pointer"
+                      onClick={() => {
+                        setSelectedParentId(opt._id);
+                        setIsParentDropdownOpen(false);
+                      }}
+                    >
+                      {opt.title}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
       <ConfirmationModal
         isOpen={isModalOpen}
-        onConfirm={handleConfirmPublish}
-        onCancel={handleCancelModal}
+        onConfirm={() => {
+          setIsModalOpen(false);
+          handleSubmit('Published');
+        }}
+        onCancel={() => setIsModalOpen(false)}
         message="Are you sure you want to publish this page?"
       />
     </div>
@@ -284,4 +221,3 @@ const AddPages = () => {
 };
 
 export default AddPages;
-
