@@ -1,0 +1,71 @@
+.ql-editor {
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+
+/* Force all text paragraphs to left-align */
+.ql-editor p,
+.ql-editor p[class*="ql-align-"] {
+  text-align: left !important;
+}
+
+/* Image container inline-block for proper text wrapping */
+.image-container {
+  display: inline-block;
+  position: relative;
+  max-width: 100%;
+  vertical-align: top;
+}
+
+/* Float images based on paragraph alignment */
+.ql-editor p.ql-align-left .image-container {
+  float: left;
+  margin: 0 1em 1em 0;
+}
+.ql-editor p.ql-align-right .image-container {
+  float: right;
+  margin: 0 0 1em 1em;
+}
+
+/* Center images by inline centering from paragraph */
+.ql-editor p.ql-align-center {
+  text-align: center !important;
+}
+.ql-editor p.ql-align-center .image-container {
+  float: none;
+  margin: 1em auto;
+}
+
+/* Ensure image sizing */
+.image-container img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Delete icon styling */
+.delete-icon {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 2px 6px;
+  font-size: 20px;
+  line-height: 1;
+  display: none;
+  z-index: 1;
+}
+.image-container:hover .delete-icon {
+  display: block;
+}
+
+/* Quill editor clearfix */
+.ql-editor::after {
+  content: "";
+  display: table;
+  clear: both;
+}
