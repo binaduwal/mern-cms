@@ -11,18 +11,27 @@ const PageTable = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [DeleteData, setDeleteData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
+  setLoading(true); 
   axios.get('http://localhost:3000/pages/all')
     .then((res) => {
       const sanitized = res.data.map(page => ({
         ...page,
         content: page.content.replace(/<button[\s\S]*?<\/button>/g, '')
       }));
-      setPages(sanitized);
+      const sorted = sanitized.sort((a, b) =>
+      new Date(b.createdAt) - new Date(a.createdAt)
+    );   
+      setPages(sorted);
     })
-    .catch((err) => console.error('Error fetching pages:', err));
- }, []);
+    .catch((err) => console.error('Error fetching pages:', err))
+    .finally(() => {
+      setLoading(false);
+    });
+}, []);
 
   const handleEdit = (slug) => {
     navigate(`/admin/pages/edit/${slug}`);
@@ -94,7 +103,14 @@ const PageTable = () => {
           </thead>
 
           <tbody>
-          {pages.filter(page => page.title.toLowerCase().includes(searchTerm.toLowerCase())).length === 0 ? (
+            {loading?(
+              <tr>
+              <td colSpan="4" className="text-center text-gray-500 py-6">
+                Loading...
+              </td>
+            </tr>
+          ): 
+          pages.filter(page => page.title.toLowerCase().includes(searchTerm.toLowerCase())).length === 0 ? (
            <tr>
            <td colSpan="4" className="text-center text-gray-500 py-6">
              No matching results found.
