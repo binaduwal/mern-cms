@@ -1,12 +1,16 @@
-const Page = require('../models/pages');
+const Page = require('../models/pagesModel');
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
+
 
 exports.createPage = async (req, res) => {
   try {
-    const { title, content, status, parent, image } = req.body;
-    const slug = title.toLowerCase().replace(/\s+/g, '-');
-    const imageName = image? path.basename(image)  
-    : null;
+    let { title, content, status, parent, image } = req.body;    const slug = title.toLowerCase().replace(/\s+/g, '-');
     
+    content = await processEmbeddedImages(content);
+    const imageName = image ? path.basename(image) : null;
+
     const newPage = new Page({
       title,
       slug,
@@ -22,6 +26,33 @@ exports.createPage = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+async function processEmbeddedImages(content) {
+  if (!content) return content;
+  
+  const imageRegex = /<img[^>]+src="data:image\/([^;]+);base64,([^"]+)"/g;
+  let match;
+  let processedContent = content;
+  
+  while ((match = imageRegex.exec(content)) !== null) {
+    const base64Data = match[2];
+    const fileBuffer = Buffer.from(base64Data, 'base64');
+    const imageType = match[1];
+    
+    const hash = crypto.createHash('md5').update(fileBuffer).digest('hex');
+    const filename = `${hash}.${imageType}`;
+    const filePath = path.join(__dirname, '../uploads', filename);
+    
+    if (!fs.existsSync(filePath)) {
+      fs.writeFileSync(filePath, fileBuffer);
+    }
+    
+    const imageUrl = `http://localhost:3000/uploads/${filename}`;
+    processedContent = processedContent.replace(match[0], `<img src="${imageUrl}"`);
+  }
+  
+  return processedContent;
+}
 
 exports.getAllPages = async (req, res) => {
   try {
@@ -44,9 +75,9 @@ exports.getPageBySlug = async (req, res) => {
 
 exports.updatePage = async (req, res) => {
   try {
-    const { title, content, status, parent,image } = req.body;
-    const slug = title.toLowerCase().replace(/\s+/g, '-');
+    let { title, content, status, parent, image } = req.body;    const slug = title.toLowerCase().replace(/\s+/g, '-');
     const imageName = image ? path.basename(image) : null;
+    content = await processEmbeddedImages(content);
 
     const updatedPage = await Page.findOneAndUpdate(
       { slug: req.params.slug },
@@ -68,8 +99,6 @@ exports.updatePage = async (req, res) => {
   }
 };
 
-const fs = require('fs');
-const path = require('path');
 
 exports.deletePage = async (req, res) => {
   try {
