@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import SearchBar from '../../reusables/SearchBar';
+import ImagePreview from './ImagePreview';
 
 const MediaLibrary = () => {
   const [media, setMedia] = useState([]);
@@ -7,20 +8,55 @@ const MediaLibrary = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [bulkSelectMode, setBulkSelectMode] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [previewImage, setPreviewImage] = useState(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   useEffect(() => {
     fetchMedia();
   }, []);
 
-  const fetchMedia = async () => {
-    try {
-      const response = await fetch('http://localhost:3000/media/all');
-      const data = await response.json();
-      setMedia(data);
-    } catch (error) {
-      console.error('Error fetching media:', error);
-    }
-  };
+const getImageSize = (url) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.src = url;
+    img.onload = () => {
+      resolve({ width: img.width, height: img.height });
+    };
+    img.onerror = (error) => {
+      console.error(`Error loading image at ${url}:`, error);
+      reject(error);
+    };
+  });
+};  
+
+const fetchMedia = async () => {
+  try {
+    const response = await fetch('http://localhost:3000/media/all');
+    const data = await response.json();
+    
+    const mediaWithSizes = await Promise.all(data.map(async (item) => {
+      try {
+        const size = await getImageSize(item.url);
+        return {
+          ...item,
+          width: size.width,
+          height: size.height,
+        };
+      } catch (error) {
+        console.error(`Failed to get size for ${item.url}:`, error);
+        return {
+          ...item,
+          width: null,
+          height: null,
+        };
+      }
+    }));
+
+    setMedia(mediaWithSizes);
+  } catch (error) {
+    console.error('Error fetching media:', error);
+  }
+};
 
   const handleAddNewClick = () => {
     fileInputRef.current.click();
@@ -42,7 +78,12 @@ const MediaLibrary = () => {
       console.log(data); 
 
       if (response.ok) {
-        setMedia((prevMedia) => [...prevMedia, { filename: file.name, url: data.imageUrl }]);
+        setMedia((prevMedia) => [...prevMedia, {
+          filename: file.name,
+          url: data.imageUrl,
+          size: file.size,
+          altText: file.name,
+        }]);
       } else {
         console.error('File upload failed:', data.message);
       }
@@ -88,11 +129,31 @@ const MediaLibrary = () => {
     setSearchTerm(e.target.value);
   };
 
+  const openPreview = (item) => {
+    setPreviewImage(item);
+    setIsPreviewOpen(true);
+  };
+  
+  const closePreview = () => {
+    setPreviewImage(null);
+    setIsPreviewOpen(false);
+  };
+  
+  const updateAltText = (url, newAltText,newTitle) => {
+    setMedia((prevMedia) =>
+      prevMedia.map((item) =>
+        item.url === url ? { ...item, altText: newAltText,title: newTitle  } : item
+      )
+    );
+  };
+
+  const removeImage = (filename) => {
+    setMedia((prevImages) => prevImages.filter((image) => image.filename !== filename));
+  };
 
 
   return (
     <div className="p-6">
-      {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-xl font-semibold text-gray-800">Media Library</h3>
         <button
@@ -103,7 +164,6 @@ const MediaLibrary = () => {
         </button>
       </div>
 
-      {/* Bulk Select Buttons */}
         <div className="flex justify-between items-center flex-wrap gap-4 mb-5">
         {bulkSelectMode ? (
           <>
@@ -133,7 +193,6 @@ const MediaLibrary = () => {
 
       </div>
 
-      {/* Hidden File Input */}
       <input
         type="file"
         ref={fileInputRef}
@@ -141,19 +200,21 @@ const MediaLibrary = () => {
         onChange={handleFileChange}
       />
 
-      {/* Selected Items Info */}
       {selectedItems.length > 0 && (
         <div className="mb-4 text-sm text-indigo-600">
           Selected {selectedItems.length} item(s)
         </div>
       )}
 
-      {/* Media Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
         {media.map((item, index) => (
           <div
             key={index}
-            className="group relative overflow-hidden rounded-lg shadow hover:shadow-lg transition-all bg-white"
+            className="group relative overflow-hidden rounded-lg shadow hover:shadow-lg transition-all bg-white cursor-pointer"
+            onClick={() => {
+              console.log('Clicked image URL:', item.url);
+              openPreview(item);
+            }}  
           >
             {bulkSelectMode && (
               <input
@@ -161,17 +222,28 @@ const MediaLibrary = () => {
                 checked={selectedItems.includes(item.url)}
                 onChange={() => toggleSelectItem(item)}
                 className="absolute top-2 left-2 z-10 w-4 h-4"
+                onClick={(e) => e.stopPropagation()}
               />
             )}
             <img
               src={item.url}
               alt={item.filename}
               className="w-full h-36 object-cover rounded-t-lg"
-            />
+          />
             <div className="absolute inset-0 bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center"></div>
           </div>
         ))}
       </div>
+
+      {isPreviewOpen && 
+      <ImagePreview 
+      image={previewImage}
+       onClose={closePreview}
+      onRemoveImage={removeImage}
+      onUpdateAltText={updateAltText}
+       />}
+
+
     </div>
   );
 };
