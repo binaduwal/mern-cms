@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { IoIosCloseCircleOutline } from "react-icons/io";
-
-const ImagePreview = ({ image, onClose, onUpdateAltText,onRemoveImage  }) => {
+import { toast } from 'react-hot-toast';
+const ImagePreview = ({ image, onClose, ononUpdatedData, onRemoveImage }) => {
   if (!image) return null;
 
-  const { url, filename, size, altText, title,description } = image; 
+  const { url, filename, size, altText, title, description } = image; 
   const sizeInMB = (size / (1024 * 1024)).toFixed(2);
   const [altTextInput, setAltTextInput] = useState(altText || '');  
   const [urlInput, setUrlInput] = useState(url);
@@ -17,6 +17,7 @@ const ImagePreview = ({ image, onClose, onUpdateAltText,onRemoveImage  }) => {
     const normalized = e.target.value.replace(/\s+/g, '-');
     setTitleInput(normalized);
   };  
+  
   const handleSaveAltText = async () => {
     const res = await fetch('http://localhost:3000/media/alttext', {
       method: 'POST',
@@ -26,20 +27,45 @@ const ImagePreview = ({ image, onClose, onUpdateAltText,onRemoveImage  }) => {
       body: JSON.stringify({
         url: image.url,
         altText: altTextInput,
-        title:titleInput,
+        title: titleInput,
         description: descriptionInput,
-            }),
-      
+      }),
     });
 
     if (res.ok) {
-      onUpdateAltText(image.url, altTextInput,titleInput); 
+      ononUpdatedData(image.url, altTextInput, titleInput, descriptionInput); 
       onClose(); 
     } else {
       console.error('Failed to update alt text');
     }
   };
 
+  const handleDownload = async () => {
+    try {
+      toast.loading('Starting download…', { id: 'download' });
+
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Network response was not ok');
+
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);//blob:http://localhost/123456...
+
+      const link = document.createElement('a');//hidden a tag(download link)
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();//responsible for downloading and saving locally
+      link.remove();
+      window.URL.revokeObjectURL(blobUrl);
+
+      toast.success('Download complete!', { id: 'download' });
+    } catch (error) {
+      toast.error('Download failed. Please try again.', { id: 'download' });
+      console.error('Download failed:', error);
+    }
+  };
+
+  
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-6">
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto">
@@ -82,7 +108,6 @@ const ImagePreview = ({ image, onClose, onUpdateAltText,onRemoveImage  }) => {
                 />
               </div>
 
-
               <div>
                 <label htmlFor="altText" className="block text-gray-700 font-medium mb-1 text-sm">
                   Alternative Text
@@ -98,20 +123,20 @@ const ImagePreview = ({ image, onClose, onUpdateAltText,onRemoveImage  }) => {
               </div>
 
               <div>
-              <label htmlFor="description" className="block text-gray-700 font-medium mb-1 text-sm">
-                Description
-              </label>
-              <textarea
-                id="description"
-                value={descriptionInput}
-                onChange={(e)=>setDescriptionInput(e.target.value)}
-                rows={2}
-                className="w-full border border-gray-300 rounded-xl px-4 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Add a description..."
-              />
-            </div>
+                <label htmlFor="description" className="block text-gray-700 font-medium mb-1 text-sm">
+                  Description
+                </label>
+                <textarea
+                  id="description"
+                  value={descriptionInput}
+                  onChange={(e)=>setDescriptionInput(e.target.value)}
+                  rows={2}
+                  className="w-full border border-gray-300 rounded-xl px-4 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="Add a description..."
+                />
+              </div>
 
-            <div>
+              <div>
                 <label htmlFor="title" className="block text-gray-700 font-medium mb-1 text-sm">
                   File URL
                 </label>
@@ -120,48 +145,46 @@ const ImagePreview = ({ image, onClose, onUpdateAltText,onRemoveImage  }) => {
                   type="text"
                   value={urlInput}
                   onChange={(e)=>setUrlInput(e.target.value)} 
-                  className="w-full border border-gray-300 rounded-xl px-4 py-1  text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-gray-300 rounded-xl px-4 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   readOnly
                 />
               </div>
 
-<div className="flex items-center space-x-4">
-  <span
-    className="text-black text-sm cursor-pointer hover:underline"
-    onClick={() => { }}
-  >Download file</span>
+              <div className="flex items-center space-x-4">
+                <span
+                  className="text-black text-sm cursor-pointer hover:underline"
+                  onClick={handleDownload}
+                >Download file</span>
 
-  <span className="text-black text-sm">|</span>
+                <span className="text-black text-sm">|</span>
 
-  <span
-  className="text-red-700 text-sm cursor-pointer hover:text-red-600 hover:underline"
-  onClick={async () => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this image permanently?');
-    if (confirmDelete) {
-      try {
-        const res = await fetch(`http://localhost:3000/media/delete/${filename}`, {
-          method: 'DELETE',
-        });
+                <span
+                  className="text-red-700 text-sm cursor-pointer hover:text-red-600 hover:underline"
+                  onClick={async () => {
+                    const confirmDelete = window.confirm('Are you sure you want to delete this image permanently?');
+                    if (confirmDelete) {
+                      try {
+                        const res = await fetch(`http://localhost:3000/media/delete/${filename}`, {
+                          method: 'DELETE',
+                        });
 
-        if (res.ok) {
-          onRemoveImage(filename);
-          alert('File deleted successfully');
-          onClose(); 
-        } else {
-          alert('Failed to delete file');
-        }
-      } catch (error) {
-        console.error('Error deleting file:', error);
-        alert('Error deleting file');
-      }
-    }
-  }}
->
-  Delete Permanently
-</span>
-
-
-</div>
+                        if (res.ok) {
+                          onRemoveImage(filename);
+                          alert('File deleted successfully');
+                          onClose(); 
+                        } else {
+                          alert('Failed to delete file');
+                        }
+                      } catch (error) {
+                        console.error('Error deleting file:', error);
+                        alert('Error deleting file');
+                      }
+                    }
+                  }}
+                >
+                  Delete Permanently
+                </span>
+              </div>
             </div>
 
             {/* Save Button */}
