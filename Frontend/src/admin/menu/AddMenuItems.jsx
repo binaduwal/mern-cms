@@ -93,6 +93,7 @@ export default function AddMenuItems() {
             onClick={() =>
 {               setIsPageOpen(prev => !prev)
                setActiveTab('pages')
+               setIsCatOpen(false)
 }              }
           >
             Select Pages
