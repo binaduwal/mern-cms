@@ -69,7 +69,11 @@ export default function AddMenuItems() {
 
   const handleAddToMenu = (items, type) => {
     const newItems=items.map(item=>({...item,type}));
-    setMenuItems(prev=>[...prev,...newItems])
+
+    const filteredItems=newItems.filter(item=>
+      !menuItems.some(existingItem=>existingItem._id===item._id)
+    )
+    setMenuItems(prev=>[...prev,...filteredItems])
 
     if(type==='pages') setSelectedPages([]);
     if(type==='categories') setSelectedCats([]);
