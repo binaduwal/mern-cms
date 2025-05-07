@@ -8,12 +8,11 @@ export default function AddMenuItems() {
   const [isPageOpen, setIsPageOpen] = useState(false);
   const [isCatOpen, setIsCatOpen] = useState(false);
   const [hoveredParent, setHoveredParent] = useState(null);
-  const [hoveredPageParent, setHoveredPageParent] = useState(null);
   const [selectedPages, setSelectedPages] = useState([]);
   const [selectedCats, setSelectedCats] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
   const [openItemIndex, setOpenItemIndex] = useState(null);
-  const [activeTab, setActiveTab] = useState('pages');
+  const [activeTab, setActiveTab] = useState('');
   const [customUrl, setCustomUrl] = useState('');
   const [customLinkText, setCustomLinkText] = useState('');
   const [isCustomLinkOpen, setIsCustomLinkOpen] = useState(false);
@@ -42,6 +41,15 @@ export default function AddMenuItems() {
     fetchMenuItems();
   }, []);
 
+  const pageParents = pages.filter(p => !p.parent);
+  const pageChildrenByParent = pages.reduce((acc, p) => {
+    if (p.parent) {
+      const pid = p.parent._id || p.parent;
+      (acc[pid] = acc[pid] || []).push(p);
+    }
+    return acc;
+  }, {});
+
   const parents = categories.filter(c => !c.parent);
   const childrenByParent = categories.reduce((acc, c) => {
     if (c.parent) {
@@ -54,14 +62,12 @@ export default function AddMenuItems() {
   // Function to organize menu items into a hierarchical structure
   const organizeMenuItems = (items, type) => {
     // First, get all top-level items (no parent)
-    const topLevel = items.filter(item => 
-      item.type === type && (!item.parent || item.parent === null)
-    );
+    const topLevel = items.filter(item => !item.parent || item.parent === null);
     
     // Create a map of children by parent ID
     const childrenMap = {};
     items.forEach(item => {
-      if (item.type === type && item.parent) {
+      if (item.parent) {
         const parentId = typeof item.parent === 'string' ? item.parent : item.parent._id;
         if (!childrenMap[parentId]) {
           childrenMap[parentId] = [];
@@ -118,39 +124,28 @@ export default function AddMenuItems() {
         return;
       }
 
-      // Get existing items of this type
-      const currentTypeItems = menuItems.filter(item => item.type === type);
-      
       // Create new items with proper ordering
       const newItems = items.map((item, index) => ({
         _id: item._id,
         title: type === 'categories' ? item.category_name : item.title,
         type,
-        order: currentTypeItems.length + index + 1,
-        parent: item.parent || null,
-        slug: item.slug,
-        url: item.url,
+        order: menuItems.length + index + 1,
+        parent: item.parent ? (typeof item.parent === 'string' ? item.parent : item.parent._id) : null,
+        slug: item.slug || '',
+        url: item.url || '',
         status: 'active'
       }));
 
-      // Filter out duplicates
-      const filteredItems = newItems.filter(item =>
-        !menuItems.some(existingItem => existingItem._id === item._id)
-      );
-
-      if (filteredItems.length === 0) {
-        alert('All items are already in the menu');
-        return;
-      }
-
+      // Send the request with proper data structure
       await axios.post('http://localhost:3000/menu/add', {
-        items: filteredItems,
+        items: newItems,
         type
       });
 
+      // Refresh the menu items
       const response = await axios.get('http://localhost:3000/menu/all');
       setMenuItems(response.data);
-      setActiveTab(type);
+      
       // Clear selections
       if(type === 'pages') {
         setSelectedPages([]);
@@ -379,8 +374,8 @@ export default function AddMenuItems() {
   };
 
   // Organize menu items for rendering
-  const organizedPages = organizeMenuItems(menuItems, 'pages');
-  const organizedCategories = organizeMenuItems(menuItems, 'categories');
+  // Organize all menu items into a single hierarchical structure
+  const organizedItems = organizeMenuItems(menuItems, null);
 
 
   return (
@@ -603,175 +598,10 @@ export default function AddMenuItems() {
         <div className="mt-10">
           <ul className="space-y-2 w-full">
 
-{activeTab === 'pages' && 
-       menuItems.filter(item => item.type === 'pages').map((item, index) => (
-          <li key={index} className="flex w-[300px] justify-between items-center p-2 border rounded bg-gray-50">
-            {/* Render Pages */}
-            <div className="w-full cursor-pointer" 
-            onClick={(e) => {
-              if (!e.target.closest('select')) {
-                e.stopPropagation();
-                setOpenItemIndex(openItemIndex === index ? null : index);
-              }
-            }}>
-              {item.title}
-              {openItemIndex === index && (
-                <div className="p-4 bg-white border-t space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Navigation Label</label>
-                    <p className="mt-1 w-full px-3 py-2 border rounded-md shadow-sm">{item.title}</p>
-                  </div>
-                  <div className='col-span-2 grid grid-cols-2 gap-4'>
-                    <div className='space-y-2'>
-                    <label className="block text-sm font-medium text-gray-700">Menu Parent</label>
-                    <select 
-                     value={getParentId(item)}
-                     onChange={(e) => handleParentChange(item._id, e.target.value)}
-                     className="mt-1 w-full px-3 py-2 border rounded-md shadow-sm"
-                   >
-                      <option value="">Select Parent</option>
-                      {menuItems
-                        .filter(menuItem => 
-                          menuItem.type === activeTab && 
-                          menuItem._id !== item._id
-                        )
-                        .map(menuItem => (
-                    <option 
-                      key={menuItem._id} 
-                      value={menuItem._id}
-                    >
-                      {menuItem.title || menuItem.category_name}
-                    </option>
-                     ))}
-                    </select>
-                    </div>
-
-
-                    <div className='space-y-2'>
-
-                    <label className="block text-sm font-medium text-gray-700">Menu order</label>
-                    <select
-                        value={item.order}
-                        onChange={(e) => {
-                          handleOrderChange(item._id, parseInt(e.target.value));
-                        }}
-                        className="mt-1 w-full px-3 py-2 border rounded-md shadow-sm"
-                      >
-                            {Array.from({ length: menuItems.filter(i => i.type === activeTab).length }, (_, i) => (
-                              <option 
-                                key={i + 1} 
-                                value={i + 1}
-                              >
-                                {i + 1}
-                              </option>
-                            ))}
-                          </select>
-
-                          </div>
-                          </div>
-                  <div className='flex justify-between'>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(item._id);
-                      }}
-                      className='text-red-500 hover:underline px-2 bg-transparent '
-                    >
-                      Remove
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setOpenItemIndex(null);
-                      }}
-                      className='text-gray-500 hover:underline px-2 bg-transparent'
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        // Save changes
-                        const menuItem = {
-                          ...item,
-                          parent: getParentId(item) || null,
-                          order: item.order
-                        };
-                        axios.put(`http://localhost:3000/menu/update/${item._id}`, {
-                          parent: menuItem.parent,
-                          order: menuItem.order
-                        }).then(() => {
-                          // Refresh menu items
-                          axios.get('http://localhost:3000/menu/all')
-                            .then(response => setMenuItems(response.data))
-                            .catch(console.error);
-                        }).catch(console.error);
-                        setOpenItemIndex(null);
-                      }}
-                      className='bg-indigo-500 text-white px-3 py-1 rounded hover:bg-indigo-600 rounded-sm'
-                    >
-                      Save
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </li>
-        ))}
-        
-        {activeTab === 'categories' && organizedCategories.topLevel.map(item => 
-              renderMenuItem(item, organizedCategories.childrenMap)
-            )}
-            
-            {activeTab === 'custom' && menuItems
-              .filter(item => item.type === 'custom')
-              .sort((a, b) => a.order - b.order)
-              .map((item, index) => (
-                <li key={index} className="flex w-full justify-between items-center p-2 border rounded bg-gray-50">
-                  <div className="w-full cursor-pointer" 
-                    onClick={(e) => {
-                      if (!e.target.closest('select')) {
-                        e.stopPropagation();
-                        setOpenItemIndex(openItemIndex === index ? null : index);
-                      }
-                    }}>
-                    {item.title}
-                    {openItemIndex === index && (
-                      <div className="p-4 bg-white border-t space-y-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">Navigation Label</label>
-                          <p className="mt-1 w-full px-3 py-2 border rounded-md shadow-sm">{item.title}</p>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">URL</label>
-                          <p className="mt-1 w-full px-3 py-2 border rounded-md shadow-sm">{item.url}</p>
-                        </div>
-                        <div className="flex justify-between">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDelete(item._id);
-                            }}
-                            className="text-red-500 hover:underline px-2 bg-transparent"
-                          >
-                            Remove
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setOpenItemIndex(null);
-                            }}
-                            className="text-gray-500 hover:underline px-2 bg-transparent"
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </li>
-              ))
-            }
+        {/* Render all menu items in a single list */}
+        {organizedItems.topLevel.map(item => 
+          renderMenuItem(item, organizedItems.childrenMap)
+        )}
           </ul>
         </div>
       </div>
