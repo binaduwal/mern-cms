@@ -14,7 +14,9 @@ const pagesItemSchema = new mongoose.Schema({
     ref: 'Pages',
     default: 'None'
   },
-  image: { type: String },
+  image: 
+  { type: String },
+
 },
 { timestamps: true }
 );

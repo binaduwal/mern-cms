@@ -90,5 +90,25 @@
 
 
   .prose img {
-    width: auto !important;
-    max-width: 100% !important;  }
+    height: auto;
+    max-width: none;  }
+
+    
+/* float‑left images */
+.prose img[style*="float: left"] {
+  float: left !important;
+  margin-right: 1rem;
+}
+
+/* float‑right images */
+.prose img[style*="float: right"] {
+  float: right !important;
+  margin-left: 1rem;  
+}
+
+/* centered images wrapped in a p[style="text-align:center"] */
+.prose p[style*="text-align:center"] {
+  text-align: center !important;
+}
+    
+

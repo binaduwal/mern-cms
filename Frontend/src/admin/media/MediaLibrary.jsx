@@ -139,10 +139,10 @@ const fetchMedia = async () => {
     setIsPreviewOpen(false);
   };
   
-  const updateAltText = (url, newAltText,newTitle) => {
+  const onUpdatedData = (url, newAltText,newTitle,newDescription) => {
     setMedia((prevMedia) =>
       prevMedia.map((item) =>
-        item.url === url ? { ...item, altText: newAltText,title: newTitle  } : item
+        item.url === url ? { ...item, altText: newAltText,title: newTitle, description: newDescription   } : item
       )
     );
   };
@@ -240,7 +240,7 @@ const fetchMedia = async () => {
       image={previewImage}
        onClose={closePreview}
       onRemoveImage={removeImage}
-      onUpdateAltText={updateAltText}
+      ononUpdatedData={onUpdatedData}
        />}
 
 

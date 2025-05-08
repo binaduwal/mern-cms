@@ -4,6 +4,8 @@ import { IoHomeOutline, IoSettingsOutline } from 'react-icons/io5';
 import { TbLayoutNavbar } from 'react-icons/tb';
 import { PiSignOut } from 'react-icons/pi';
 import { GiHamburgerMenu } from 'react-icons/gi';
+import { MdOutlineDashboardCustomize } from "react-icons/md";
+import { GoFileMedia } from "react-icons/go";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,17 +22,22 @@ const Sidebar = () => {
        path: '/admin/pages',
        icon: <TbLayoutNavbar /> 
       },
-
       {
-       name: 'Settings',
-       path: '/settings',
-       icon: <IoSettingsOutline /> 
+       name: 'Categories',
+       path: '/admin/category',
+       icon: <MdOutlineDashboardCustomize /> 
       },
 
       {
-       name: 'Signout',
-       path: '/signout',
-       icon: <PiSignOut /> 
+       name: 'Menu',
+       path: '/admin/menu',
+       icon: <IoSettingsOutline /> 
+      },
+      
+      {
+       name: 'Media Center',
+       path: '/admin/media',
+       icon: <GoFileMedia /> 
       },
 
     ]

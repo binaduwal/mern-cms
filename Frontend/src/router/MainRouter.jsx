@@ -32,10 +32,15 @@ import CountryDetails from "../pages/CountryDetails";
 import SpecificCountry from "../components/SpecificCountry";
 import AdminLayout from "../admin/components/AdminLayout";
 import Dashboard from "../admin/components/Dashboard";
-import AddPages from "../admin/pages/AddPages";
 import PageView from "../admin/pages/[slug]";
 import PageTable from "../admin/pages/PageTable";
 import EditPage from "../admin/pages/EditPage";
+import AddPages from "../admin/pages/AddPages";
+import CategoryForm from "../admin/categories/CategoryForm";
+import CategoryTable from "../admin/categories/CategoryTable";
+import MediaLibrary from "../admin/media/MediaLibrary";
+import AddMenuItems from "../admin/menu/AddMenuItems";
+import DropdownForm from "../admin/menu/DropdownForm";
 // import HomePageMgmt from "../admins/HomePageMgmt";
 // import Sidebar from "../admin/components/Sidebar";
 
@@ -88,7 +93,11 @@ export const MainRouter=createBrowserRouter(
             <Route path="add-pages" element={<AddPages/>} />
             <Route path="pages/:slug" element={<PageView/>} />
             <Route path="/admin/pages/edit/:slug" element={<EditPage/>} />
-
+            <Route path="categories" element={<CategoryForm/>} />
+            <Route path="category" element={<CategoryTable/>} />
+            <Route path="media" element={<MediaLibrary/>} />
+            <Route path="menu" element={<AddMenuItems/>} />
+            <Route path="test" element={<DropdownForm/>} />
             </Route>
 
         </Route>

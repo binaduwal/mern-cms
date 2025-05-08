@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef,useCallback ,useMemo} from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import ConfirmationModal from '../../reusables/ConfirmationModal';
-import '../../components/CustomImageBlot'
 import JoditEditor from 'jodit-react';
 
 const EditPage = () => {
@@ -28,7 +27,6 @@ const EditPage = () => {
 
         const parentsResponse = await axios.get('http://localhost:3000/pages/all');
         
-        // Fetch all pages for parent options
         setParentOptions([
           { _id: null, title: 'None' },
           ...parentsResponse.data.map(p => ({ _id: p._id, title: p.title }))

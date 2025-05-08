@@ -9,11 +9,14 @@ import { Provider } from 'react-redux'
 import { store } from './app/Store.jsx'
 import { persistStore } from 'redux-persist'
 import { PersistGate } from 'redux-persist/integration/react'
-
+import Modal from 'react-modal';
+Modal.setAppElement('#root');   
+import { Toaster } from 'react-hot-toast';
 
 let persistor = persistStore(store);
 createRoot(document.getElementById('root')).render(
   <StrictMode>
+    <Toaster position="top-center" />
     <Provider store={store}>
     <PersistGate persistor={persistor}>
     <RouterProvider router={MainRouter}/>
