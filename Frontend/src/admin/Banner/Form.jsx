@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useAddBannerMutation } from '../../app/services/BannerApi'
+import { useNavigate } from 'react-router-dom';
+// import { toast } from 'react-toastify';
 
 const Form = () => {
     const [formData, setFormData] = useState({
@@ -16,6 +18,7 @@ const Form = () => {
       });
     
       const [addBanner, { isLoading, error: apiError, isSuccess }] = useAddBannerMutation();
+      const navigate = useNavigate();
     
       const handleChange = (e) => {
         const { name, value } = e.target;
@@ -45,7 +48,7 @@ const Form = () => {
     
         try {
           await addBanner(formData).unwrap();
-          toast.success('Banner added successfully!');
+        //   toast.success('Banner added successfully!');
           alert('Banner added successfully!');
           setFormData({
             heading: '',
@@ -53,6 +56,7 @@ const Form = () => {
             image: { url: '', alt: '' },
             button: { text: '', link: '' },
           });
+          navigate('/admin/banner'); // Navigate to the banner table
         } catch (err) {
           alert(`Failed to add banner: ${err.data?.message || err.error || 'Server error'}`);
           console.error('Failed to add banner:', err);

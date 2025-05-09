@@ -22,15 +22,19 @@ export const bannerApi=apiSlice.injectEndpoints({
             invalidatesTags:['Banner']
         }),
         updateBanner:builder.mutation({
-            query:(id)=>({
+            query:({ id, ...updatedData })=>({ // Accept id and the data to update
                 url:`/banner/edit/${id}`,
                 method:'PUT',
-                body:data.banner
+                body:updatedData // Use the passed data for the body
             }),
             invalidatesTags:['Banner']
         })
-
     })
 })
 
-export const {useAddBannerMutation,useGetBannerQuery}=bannerApi;
+export const {
+    useAddBannerMutation,
+    useGetBannerQuery,
+    useDeleteBannerMutation, // Export this hook
+    useUpdateBannerMutation  // Export this hook
+}=bannerApi;

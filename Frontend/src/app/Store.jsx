@@ -29,7 +29,7 @@ const reducer = combineReducers({
   permissionslice:permissionReducer,
   addroleslice:addRoleReducer,
   [apiSlice.reducerPath]:apiSlice.reducer,
-  [bannerApi.reducerPath]: bannerApi.reducer, 
+  // [bannerApi.reducerPath]: bannerApi.reducer, 
   
 });
 
@@ -38,7 +38,10 @@ const persistedReducer = persistReducer(persistConfig, reducer);
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiSlice.middleware),
+    // getDefaultMiddleware().concat(apiSlice.middleware),
+  getDefaultMiddleware({
+    serializableCheck: false, 
+  }).concat(apiSlice.middleware),
  
 });
 // Enable refetching on focus and reconnect || caching
