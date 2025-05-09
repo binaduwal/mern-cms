@@ -5,6 +5,8 @@ const cors = require('cors');
 const app = express();
 const categoryRoute=require('./routes/categoryRoutes')
 const mediaRoute=require('./routes/mediaRoutes')
+const BannerRoutes=require('./routes/BannerRoutes')
+
 connectDB();
 app.use(cors({
   origin: ['http://localhost:5173','http://localhost:5174'],
@@ -24,6 +26,7 @@ app.use('/pages',pagesRoute)
 app.use('/categories',categoryRoute)
 app.use('/media',mediaRoute)
 app.use('/menu', require('./routes/menu'))
+app.use('/banner',BannerRoutes)
 
 
 app.listen(3000, () => {

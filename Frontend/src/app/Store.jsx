@@ -11,6 +11,7 @@ import { permissionReducer } from "./slices/PermissionSlice";
 import { addRoleReducer } from "./slices/AddRoleSlice";
 import apiSlice from "./services/ApiSlice";
 import { setupListeners } from "@reduxjs/toolkit/query";
+import { bannerApi } from "./services/BannerApi";
 
 const persistConfig = {
   key: "root",
@@ -28,6 +29,7 @@ const reducer = combineReducers({
   permissionslice:permissionReducer,
   addroleslice:addRoleReducer,
   [apiSlice.reducerPath]:apiSlice.reducer,
+  [bannerApi.reducerPath]: bannerApi.reducer, 
   
 });
 

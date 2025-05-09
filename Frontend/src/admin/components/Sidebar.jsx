@@ -39,6 +39,11 @@ const Sidebar = () => {
        path: '/admin/media',
        icon: <GoFileMedia /> 
       },
+      {
+       name: 'Banner',
+       path: '/admin/banner',
+       icon: <GoFileMedia /> 
+      },
 
     ]
 

@@ -40,6 +40,8 @@ import CategoryForm from "../admin/categories/CategoryForm";
 import CategoryTable from "../admin/categories/CategoryTable";
 import MediaLibrary from "../admin/media/MediaLibrary";
 import AddMenuItems from "../admin/menu/AddMenuItems";
+// import BannerTable from "../admin/Banner/BannerTable";
+import Form from "../admin/Banner/Form";
 // import HomePageMgmt from "../admins/HomePageMgmt";
 // import Sidebar from "../admin/components/Sidebar";
 
@@ -96,6 +98,8 @@ export const MainRouter=createBrowserRouter(
             <Route path="category" element={<CategoryTable/>} />
             <Route path="media" element={<MediaLibrary/>} />
             <Route path="menu" element={<AddMenuItems/>} />
+            <Route path="banner" element={<Form/>} />
+            {/* <Route path="banner" element={<BannerTable/>} /> */}
             </Route>
 
         </Route>
