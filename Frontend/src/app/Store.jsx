@@ -9,6 +9,8 @@ import { InquiryReducer } from "./slices/InquirySlice";
 import { userRoleReducer } from "./slices/RoleSlice";
 import { permissionReducer } from "./slices/PermissionSlice";
 import { addRoleReducer } from "./slices/AddRoleSlice";
+import apiSlice from "./services/ApiSlice";
+import { setupListeners } from "@reduxjs/toolkit/query";
 
 const persistConfig = {
   key: "root",
@@ -25,6 +27,8 @@ const reducer = combineReducers({
   roleslice:userRoleReducer,
   permissionslice:permissionReducer,
   addroleslice:addRoleReducer,
+  [apiSlice.reducerPath]:apiSlice.reducer,
+  
 });
 
 const persistedReducer = persistReducer(persistConfig, reducer);
@@ -32,8 +36,8 @@ const persistedReducer = persistReducer(persistConfig, reducer);
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: false,
-      immutableCheck: false, 
-    })
+    getDefaultMiddleware().concat(apiSlice.middleware),
+ 
 });
+// Enable refetching on focus and reconnect || caching
+setupListeners(store.dispatch);

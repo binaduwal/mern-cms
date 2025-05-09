@@ -8,8 +8,11 @@ import SummarySection from "../components/SummarySection";
 import TopDestination from "../components/TopDestination";
 import ContactForm from "../components/ContactForm";
 import { faqItems } from "../utils/Elements";
+import { useGetItemQuery } from "../app/services/QuerySettings";
 
 const Home = () => {
+  
+   
   return (
     <>
       <LandingBanner />

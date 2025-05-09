@@ -14,65 +14,6 @@ import { FiInstagram } from "react-icons/fi";
 import { TbHomeEdit } from "react-icons/tb";
 
 
-// export const baseurl = "http://localhost:3000"; // Your base URL for local development
-
-// export const navItems = [
-//   {
-//     id: 2,
-//     title: "About Us",
-//     slug: "about-us",  // Slug for the page
-//     url: `${baseurl}/about-us`,  // Full URL using baseurl and slug
-//     status: "active",  // Default status is active
-//   },
-//   {
-//     id: 3,
-//     title: "Study Abroad",
-//     slug: "study-abroad",
-//     url: `${baseurl}/study-abroad`,
-//     status: "active",
-//   },
-//   {
-//     id: 4,
-//     title: "Test Preparation",
-//     slug: "test-preparation",
-//     url: `${baseurl}/test-preparation`,
-//     status: "active",
-//     icon2: <MdKeyboardArrowDown />,
-//     dropdown: [
-//       { id: 10, title: "IELTS Preparation", slug: "ielts-preparation", url: `${baseurl}/test/ielts`, status: "active" },
-//       { id: 30, title: "PTE Preparation", slug: "pte-preparation", url: `${baseurl}/test/pte`, status: "active" },
-//       { id: 40, title: "SAT Preparation", slug: "sat-preparation", url: `${baseurl}/test/sat`, status: "active" },
-//     ],
-//   },
-//   {
-//     id: 5,
-//     title: "Services",
-//     slug: "services",
-//     url: `${baseurl}/services`,
-//     status: "active",
-//   },
-//   {
-//     id: 6,
-//     title: "Blogs/Events",
-//     slug: "blogs-events",
-//     url: `${baseurl}/blogs-events`,
-//     status: "active",
-//     icon2: <MdKeyboardArrowDown />,
-//     dropdown: [
-//       { id: 18, title: "Blogs", slug: "blogs", url: `${baseurl}/blogs`, status: "active" },
-//       { id: 19, title: "Events", slug: "events", url: `${baseurl}/events`, status: "active" },
-//     ],
-//   },
-//   {
-//     id: 7,
-//     title: "Contact Us",
-//     slug: "contact-us",
-//     url: `${baseurl}/contact-us`,
-//     status: "active",
-//   },
-// ];
-
-
 
 export const Th = ({ children, width }) => {
   return (

@@ -8,7 +8,6 @@ const menuSchema = new mongoose.Schema({
     enum: ['pages', 'categories','custom'] 
   },
   order: { type: Number, required: true },
-  slug: { type: String },
   url: { type: String },
   parent: { 
     type: mongoose.Schema.Types.ObjectId, 
