@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import { useAddBannerMutation } from '../../app/services/BannerApi'
 import { useNavigate } from 'react-router-dom';
-// import { toast } from 'react-toastify';
-
 const Form = () => {
     const [formData, setFormData] = useState({
         heading: '',
         paragraph: '', 
         image: {
           url: '',
-          alt: '',
+          alt: ''
         },
         button: {
           text: '',
@@ -27,7 +25,7 @@ const Form = () => {
           [name]: value,
         }));
       };
-    
+
       const handleNestedChange = (e, parentKey) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
@@ -56,7 +54,7 @@ const Form = () => {
             image: { url: '', alt: '' },
             button: { text: '', link: '' },
           });
-          navigate('/admin/banner'); // Navigate to the banner table
+          navigate('/admin/banner'); 
         } catch (err) {
           alert(`Failed to add banner: ${err.data?.message || err.error || 'Server error'}`);
           console.error('Failed to add banner:', err);
@@ -153,7 +151,7 @@ const Form = () => {
                     Button Link/URL <span className="text-red-500">*</span>
                   </label>
                   <input
-                    type="text" // Can also be type="url" if you want browser validation
+                    type="text" 
                     name="link"
                     id="buttonLink"
                     value={formData.button.link}

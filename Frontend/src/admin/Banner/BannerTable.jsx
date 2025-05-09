@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useGetBannerQuery, useDeleteBannerMutation } from '../../app/services/BannerApi';
-import { FaEdit, FaPlus, FaTrash } from 'react-icons/fa'; 
+import { FaEdit, FaPlus, FaTrash, FaEye } from 'react-icons/fa'; 
 import DeleteConfirmationModal from '../../reusables/ConfirmationModal';
+import toast from 'react-hot-toast';
 
 const BannerTable = () => {
   const { data: banners, error, isLoading, isFetching } = useGetBannerQuery(undefined, {
@@ -26,11 +27,9 @@ const BannerTable = () => {
     if (!bannerToDelete) return;
     try {
       await deleteBanner(bannerToDelete._id).unwrap();
-      // toast.success(`Banner "${bannerToDelete.heading}" deleted successfully!`);
-      alert(`Banner "${bannerToDelete.heading}" deleted successfully!`); 
+      toast.success(`"${bannerToDelete.heading}" deleted successfully!`);
     } catch (err) {
-      // toast.error(`Failed to delete banner: ${err.data?.message || err.error}`);
-      alert(`Failed to delete banner: ${err.data?.message || err.error}`);
+      toast.error(`Failed to delete banner: ${err.data?.message || err.error}`);
       console.error('Failed to delete banner:', err);
     }
     closeDeleteModal();
@@ -43,7 +42,7 @@ const BannerTable = () => {
             <h2 className="text-2xl font-semibold text-gray-800">Manage Banners</h2>
             <Link
             to="/admin/banner"
-            className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded inline-flex items-center"
+            className="bg-indigo-600 hover:bg-indigo-400 text-white font-bold py-2 px-4 inline-flex items-center"
             >
             <FaPlus className="mr-2" /> Add New Banner
             </Link>
@@ -57,7 +56,7 @@ const BannerTable = () => {
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-semibold text-gray-800">Manage Banners</h2>
         <Link
-          to="/admin/banner/add" // Link to your Add Banner form
+          to="/admin/banner/add" 
           className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded inline-flex items-center"
         >
           <FaPlus className="mr-2" /> Add New Banner
@@ -81,20 +80,29 @@ const BannerTable = () => {
                 <td className="px-6 py-4 whitespace-normal text-sm text-gray-700 max-w-md truncate hover:max-w-none hover:whitespace-normal">{banner.paragraph}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{banner.button?.text}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  {/* Add Link to edit page later */}
-                  <button 
-                    onClick={() => alert(`Cannot edit`)} 
-                    className="text-indigo-600 bg-transparent hover:text-indigo-900 mr-3"
-                  >
-                    <FaEdit size={18}/>
-                  </button>
-                  <button 
-                    onClick={() => openDeleteModal(banner)} 
-                    disabled={isDeleting} 
-                    className="text-red-600 bg-transparent hover:text-red-900 disabled:opacity-50"
-                  >
-                    <FaTrash size={18}/>
-                  </button>
+                <div className="flex items-center space-x-3"> {/* Flex container for icons */}
+                    <button 
+                      onClick={() => alert(`Edit functionality for ${banner._id} to be implemented.`)} 
+                      className="text-black bg-transparent hover:text-indigo-600"
+                      title="Edit Banner"
+                    >
+                      <FaEdit size={18}/>
+                    </button>
+                    <Link 
+                      to={`/admin/banner/preview/${banner._id}`} 
+                      target="_blank"
+                      className="text-black bg-transparent hover:text-gray-600"
+                      title="Preview Banner"
+                    ><FaEye size={18}/></Link>
+                    <button 
+                      onClick={() => openDeleteModal(banner)} 
+                      disabled={isDeleting} 
+                      className="text-black bg-transparent hover:text-red-600 disabled:opacity-50"
+                      title="Delete Banner"
+                    >
+                      <FaTrash size={18}/>
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

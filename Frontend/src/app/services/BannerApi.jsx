@@ -14,6 +14,10 @@ export const bannerApi=apiSlice.injectEndpoints({
             query:()=>'/banner/all',
             providesTags:['Banner']
         }),
+        getBannerById: builder.query({
+            query: (id) => `/banner/${id}`,
+            providesTags: (result, error, id) => [{ type: 'Banner', id }],
+        }),
         deleteBanner:builder.mutation({
             query:(id)=>({
                 url:`/banner/delete/${id}`,
@@ -35,6 +39,7 @@ export const bannerApi=apiSlice.injectEndpoints({
 export const {
     useAddBannerMutation,
     useGetBannerQuery,
+    useGetBannerByIdQuery, // Export the new hook
     useDeleteBannerMutation, // Export this hook
     useUpdateBannerMutation  // Export this hook
 }=bannerApi;

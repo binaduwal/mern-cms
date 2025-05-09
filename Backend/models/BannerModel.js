@@ -13,7 +13,7 @@ const bannerSchema=new mongoose.Schema({
     image:{
         url:{
             type:String,
-            required:true
+            // required:true
         },
         alt:{
             type:String,

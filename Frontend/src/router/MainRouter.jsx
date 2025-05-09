@@ -42,6 +42,7 @@ import MediaLibrary from "../admin/media/MediaLibrary";
 import AddMenuItems from "../admin/menu/AddMenuItems";
 import BannerTable from "../admin/Banner/BannerTable";
 import Form from "../admin/Banner/Form";
+import BannerPreview from "../admin/Banner/BannerPreview"; // Import the new preview component
 // import HomePageMgmt from "../admins/HomePageMgmt";
 // import Sidebar from "../admin/components/Sidebar";
 
@@ -100,6 +101,7 @@ export const MainRouter=createBrowserRouter(
             <Route path="menu" element={<AddMenuItems/>} />
             <Route path="banner/add" element={<Form/>} />
             <Route path="banner" element={<BannerTable/>} />
+            <Route path="banner/preview/:id" element={<BannerPreview />} /> {/* New route for preview */}
             </Route>
 
         </Route>

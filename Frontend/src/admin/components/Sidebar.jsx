@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { IoHomeOutline, IoSettingsOutline } from 'react-icons/io5';
 import { TbLayoutNavbar } from 'react-icons/tb';
-import { PiSignOut } from 'react-icons/pi';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { MdOutlineDashboardCustomize } from "react-icons/md";
 import { GoFileMedia } from "react-icons/go";
