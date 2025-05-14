@@ -1,7 +1,7 @@
-import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useGetBannerByIdQuery } from '../../app/services/BannerApi';
 import { FaArrowLeft } from 'react-icons/fa';
+import {apiSlice} from '../../app/services/ApiSlice'
 
 const BannerPreview = () => {
   const { id } = useParams();
@@ -27,11 +27,12 @@ const BannerPreview = () => {
         </Link>
       </div>
       <div className="container mx-auto py-8 px-4">
-        {banner.image && banner.image.url && (
+        {banner.image?.url && (
           <div
             className="relative w-full h-[60vh] bg-cover bg-center rounded-lg shadow-xl overflow-hidden group mb-6"
-            style={{ backgroundImage: `url(${banner.image.url})` }}
-            title={banner.image.alt || banner.heading}
+            style={{ 
+              backgroundImage: `url(${apiSlice.reducerPath === 'api' ? 'http://localhost:3000' : ''}${banner.image.url})` 
+            }}            title={banner.image.alt || banner.heading}
           >
             <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col items-center justify-center text-center p-6">
               {banner.heading && (
