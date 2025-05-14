@@ -26,7 +26,7 @@ app.use('/pages',pagesRoute)
 app.use('/categories',categoryRoute)
 app.use('/media',mediaRoute)
 app.use('/menu', require('./routes/menu'))
-app.use('/banner',BannerRoutes)
+app.use('/api/banner',BannerRoutes)
 
 
 app.listen(3000, () => {

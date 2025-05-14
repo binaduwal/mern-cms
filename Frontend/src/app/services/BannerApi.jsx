@@ -3,33 +3,33 @@ import apiSlice from "./ApiSlice"
 export const bannerApi=apiSlice.injectEndpoints({
     endpoints:(builder)=>({
         addBanner:builder.mutation({
-            query:(newBanner)=>({
-                url:'/banner/create',
+            query:(formData)=>({ 
+                url:'/api/banner/create',
                 method:'POST',
-                body:newBanner
+                body:formData
             }),
             invalidatesTags:['Banner']
         }),
         getBanner:builder.query({
-            query:()=>'/banner/all',
+            query:()=>'/api/banner/all',
             providesTags:['Banner']
         }),
         getBannerById: builder.query({
-            query: (id) => `/banner/${id}`,
+            query: (id) => `/api/banner/${id}`, 
             providesTags: (result, error, id) => [{ type: 'Banner', id }],
         }),
         deleteBanner:builder.mutation({
-            query:(id)=>({
-                url:`/banner/delete/${id}`,
+            query:(id)=>({ 
+                url:`/api/banner/delete/${id}`,
                 method:'DELETE'
             }),
             invalidatesTags:['Banner']
         }),
         updateBanner:builder.mutation({
-            query:({ id, ...updatedData })=>({ // Accept id and the data to update
-                url:`/banner/edit/${id}`,
+            query:({ id, formData })=>({ 
+                url:`/api/banner/edit/${id}`,
                 method:'PUT',
-                body:updatedData // Use the passed data for the body
+                body:formData
             }),
             invalidatesTags:['Banner']
         })

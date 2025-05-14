@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useAddBannerMutation } from '../../app/services/BannerApi'
 import { useNavigate } from 'react-router-dom';
+
 const Form = () => {
     const [formData, setFormData] = useState({
         heading: '',
         paragraph: '', 
         image: {
-          url: '',
           alt: ''
         },
         button: {
@@ -15,6 +15,7 @@ const Form = () => {
         },
       });
     
+      const [imageFile, setImageFile] = useState(null);
       const [addBanner, { isLoading, error: apiError, isSuccess }] = useAddBannerMutation();
       const navigate = useNavigate();
     
@@ -36,24 +37,39 @@ const Form = () => {
           },
         }));
       };
+      
+      const handleImageChange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+          setImageFile(e.target.files[0]);
+        }
+      };
     
       const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!formData.heading || !formData.paragraph || !formData.image.url || !formData.image.alt || !formData.button.text || !formData.button.link) {
+        if (!formData.heading || !formData.paragraph || !imageFile || !formData.image.alt || !formData.button.text || !formData.button.link) {
           alert('Please fill all required fields.'); 
           return;
         }
     
         try {
-          await addBanner(formData).unwrap();
-        //   toast.success('Banner added successfully!');
+          // Create FormData object for multipart/form-data submission
+          const submitData = new FormData();
+          submitData.append('heading', formData.heading);
+          submitData.append('paragraph', formData.paragraph);
+          submitData.append('image[alt]', formData.image.alt);
+          submitData.append('button[text]', formData.button.text);
+          submitData.append('button[link]', formData.button.link);
+          submitData.append('image', imageFile);
+          
+          await addBanner(submitData).unwrap();
           alert('Banner added successfully!');
           setFormData({
             heading: '',
             paragraph: '',
-            image: { url: '', alt: '' },
+            image: { alt: '' },
             button: { text: '', link: '' },
           });
+          setImageFile(null);
           navigate('/admin/banner'); 
         } catch (err) {
           alert(`Failed to add banner: ${err.data?.message || err.error || 'Server error'}`);
@@ -98,19 +114,21 @@ const Form = () => {
               <legend className="text-lg font-medium text-gray-900 px-2">Image Details</legend>
               <div className="space-y-4 mt-2">
                 <div>
-                  <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-700 mb-1">
-                    Image URL <span className="text-red-500">*</span>
+                  <label htmlFor="imageFile" className="block text-sm font-medium text-gray-700 mb-1">
+                    Banner Image <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="file" 
-                    name="url"
-                    id="imageUrl"
-                    value={formData.image.url}
-                    onChange={(e) => handleNestedChange(e, 'image')}
+                    name="imageFile"
+                    accept="image/*"
+                    id="imageFile"
+                    onChange={handleImageChange}
                     required
-                    placeholder="https://example.com/image.jpg"
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   />
+                  {imageFile && (
+                    <p className="mt-2 text-sm text-gray-600">Selected file: {imageFile.name}</p>
+                  )}
                 </div>
                 <div>
                   <label htmlFor="imageAlt" className="block text-sm font-medium text-gray-700 mb-1">
@@ -180,4 +198,4 @@ const Form = () => {
       );
     };
 
-export default Form
+export default Form;

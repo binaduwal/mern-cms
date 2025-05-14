@@ -6,9 +6,12 @@ import DeleteConfirmationModal from '../../reusables/ConfirmationModal';
 import toast from 'react-hot-toast';
 
 const BannerTable = () => {
-  const { data: banners, error, isLoading, isFetching, refetch } = useGetBannerQuery(undefined, {
-    refetchOnMountOrArgChange: true, 
-  });
+  const { data: banners, error, isLoading, isFetching, refetch } = useGetBannerQuery();
+
+  console.log('Banners loading state:', isLoading);
+  console.log('Banners data:', banners);
+  console.log('Error:', error);
+  
   const [deleteBanner, { isLoading: isDeleting }] = useDeleteBannerMutation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [bannerToDelete, setBannerToDelete] = useState(null);
@@ -114,7 +117,7 @@ const BannerTable = () => {
         isOpen={isModalOpen}
         onCancel={closeDeleteModal}
         onConfirm={confirmDelete}
-        itemName={bannerToDelete?.heading} // Pass the banner heading as itemName
+        itemName={bannerToDelete?.heading} 
         isDeleting={isDeleting}
       />
     </div>

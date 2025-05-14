@@ -31,7 +31,7 @@ const BannerPreview = () => {
           <div
             className="relative w-full h-[60vh] bg-cover bg-center rounded-lg shadow-xl overflow-hidden group mb-6"
             style={{ 
-              backgroundImage: `url(${apiSlice.reducerPath === 'api' ? 'http://localhost:3000' : ''}${banner.image.url})` 
+    backgroundImage: `url(${banner.image.url})` 
             }}            title={banner.image.alt || banner.heading}
           >
             <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col items-center justify-center text-center p-6">

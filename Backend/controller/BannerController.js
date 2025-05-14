@@ -1,18 +1,41 @@
 const Banner = require('../models/BannerModel');
 
- exports.createBanner = async (req, res) => {
-  try {
-    const { heading, paragraph, image, button } = req.body;
 
-    if (!heading || !image || !image.url || !image.alt || !button || !button.text || !button.link) {
-      return res.status(400).json({ message: 'Please provide all required fields: heading, image (url, alt), button (text, link)' });
+exports.createBanner = async (req, res) => {
+  try {
+    // Access fields from req.body (for text fields in FormData) and req.file (for the uploaded file)
+    const { heading, paragraph } = req.body;
+    const imageAlt = req.body['image[alt]']; // Access FormData field
+    const buttonText = req.body['button[text]']; // Access FormData field
+    const buttonLink = req.body['button[link]']; // Access FormData field
+
+    // Validate required fields
+    if (!heading || !paragraph || !req.file || !imageAlt || !buttonText || !buttonLink) {
+      // Ensure req.file exists (meaning an image was uploaded)
+      let missingFields = [];
+      if (!heading) missingFields.push('heading');
+      if (!paragraph) missingFields.push('paragraph');
+      if (!req.file) missingFields.push('image');
+      if (!imageAlt) missingFields.push('image alt text');
+      if (!buttonText) missingFields.push('button text');
+      if (!buttonLink) missingFields.push('button link');
+      
+      return res.status(400).json({ 
+        message: `Please provide all required fields. Missing: ${missingFields.join(', ')}`
+      });
     }
 
     const banner = new Banner({
       heading,
-      paragraph, 
-      image,
-      button,
+      paragraph,
+      image: {
+        url: `/uploads/banners/${req.file.filename}`,
+        alt: imageAlt,
+      },
+      button: { 
+        text: buttonText,
+        link: buttonLink,
+      },
     });
 
     const createdBanner = await banner.save();
@@ -23,9 +46,11 @@ const Banner = require('../models/BannerModel');
   }
 };
 
+
+
 exports.getAllBanners = async (req, res) => {
   try {
-    const banners = await Banner.find({});
+    const banners = await Banner.find({}).sort({ createdAt: -1 });
     res.json(banners);
   } catch (error) {
     console.error('Error fetching banners:', error);
