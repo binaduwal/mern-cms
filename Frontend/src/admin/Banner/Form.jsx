@@ -46,20 +46,15 @@ const Form = () => {
     
       const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!formData.heading || !formData.paragraph || !imageFile || !formData.image.alt || !formData.button.text || !formData.button.link) {
-          alert('Please fill all required fields.'); 
-          return;
-        }
     
         try {
-          // Create FormData object for multipart/form-data submission
           const submitData = new FormData();
-          submitData.append('heading', formData.heading);
-          submitData.append('paragraph', formData.paragraph);
-          submitData.append('image[alt]', formData.image.alt);
-          submitData.append('button[text]', formData.button.text);
-          submitData.append('button[link]', formData.button.link);
-          submitData.append('image', imageFile);
+          submitData.append('heading',    formData.heading);
+          submitData.append('paragraph',  formData.paragraph);
+          submitData.append('alt',        formData.image.alt);
+          submitData.append('btnText',    formData.button.text);
+          submitData.append('btnLink',    formData.button.link);
+          submitData.append('image',      imageFile);
           
           await addBanner(submitData).unwrap();
           alert('Banner added successfully!');

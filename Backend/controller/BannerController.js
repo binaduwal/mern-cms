@@ -1,48 +1,48 @@
 const Banner = require('../models/BannerModel');
 
-
 exports.createBanner = async (req, res) => {
   try {
-    // Access fields from req.body (for text fields in FormData) and req.file (for the uploaded file)
-    const { heading, paragraph } = req.body;
-    const imageAlt = req.body['image[alt]']; // Access FormData field
-    const buttonText = req.body['button[text]']; // Access FormData field
-    const buttonLink = req.body['button[link]']; // Access FormData field
+    console.log('--- Create Banner Request ---');
+    console.log('req.body:', req.body);
+    console.log('req.file:', req.file);
 
-    // Validate required fields
-    if (!heading || !paragraph || !req.file || !imageAlt || !buttonText || !buttonLink) {
-      // Ensure req.file exists (meaning an image was uploaded)
-      let missingFields = [];
-      if (!heading) missingFields.push('heading');
-      if (!paragraph) missingFields.push('paragraph');
-      if (!req.file) missingFields.push('image');
-      if (!imageAlt) missingFields.push('image alt text');
-      if (!buttonText) missingFields.push('button text');
-      if (!buttonLink) missingFields.push('button link');
-      
-      return res.status(400).json({ 
-        message: `Please provide all required fields. Missing: ${missingFields.join(', ')}`
+    const { heading, paragraph, alt, btnText, btnLink } = req.body;
+
+    // validate
+    const missing = [];
+    if (!heading)   missing.push('heading');
+    if (!paragraph) missing.push('paragraph');
+    if (!req.file)  missing.push('image file');
+    if (!alt)       missing.push('image alt');
+    if (!btnText)   missing.push('button text');
+    if (!btnLink)   missing.push('button link');
+
+    if (missing.length) {
+      return res.status(400).json({
+        message: `Please provide all required fields. Missing: ${missing.join(', ')}`
       });
     }
 
-    const banner = new Banner({
+const banner = await Banner.create({
       heading,
       paragraph,
-      image: {
-        url: `/uploads/banners/${req.file.filename}`,
-        alt: imageAlt,
-      },
-      button: { 
-        text: buttonText,
-        link: buttonLink,
+      image: 
+          { url: `/uploads/banners/${req.file.filename}`, alt },
+      button: {
+        text: btnText,
+        link: btnLink,
       },
     });
 
     const createdBanner = await banner.save();
-    res.status(201).json(createdBanner);
+    res.status(201).json(banner);
+
   } catch (error) {
     console.error('Error creating banner:', error);
-    res.status(500).json({ message: 'Server error while creating banner', error: error.message });
+    res.status(500).json({
+      message: 'Server error while creating banner',
+      error: error.message
+    });
   }
 };
 
@@ -51,6 +51,9 @@ exports.createBanner = async (req, res) => {
 exports.getAllBanners = async (req, res) => {
   try {
     const banners = await Banner.find({}).sort({ createdAt: -1 });
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache'); 
+    res.setHeader('Expires', '0'); 
     res.json(banners);
   } catch (error) {
     console.error('Error fetching banners:', error);
@@ -119,4 +122,3 @@ exports.deleteBanner = async (req, res) => {
     res.status(500).json({ message: 'Server error while deleting banner', error: error.message });
   }
 };
-
