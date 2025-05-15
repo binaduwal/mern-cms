@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useGetBannerQuery, useDeleteBannerMutation } from '../../app/services/BannerApi';
 import { FaEdit, FaPlus, FaTrash, FaEye } from 'react-icons/fa'; 
 import DeleteConfirmationModal from '../../reusables/ConfirmationModal';
+import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 const BannerTable = () => {
@@ -11,6 +12,9 @@ const BannerTable = () => {
   console.log('Banners loading state:', isLoading);
   console.log('Banners data:', banners);
   console.log('Error:', error);
+
+  const navigate = useNavigate();
+
   
   const [deleteBanner, { isLoading: isDeleting }] = useDeleteBannerMutation();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -84,13 +88,12 @@ const BannerTable = () => {
                 <td className="px-6 py-4 whitespace-normal text-sm text-gray-700 max-w-md truncate hover:max-w-none hover:whitespace-normal">{banner.paragraph}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{banner.button?.text}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <div className="flex items-center space-x-3"> {/* Flex container for icons */}
-                    <button 
-                      onClick={() => alert(`Edit functionality for ${banner._id} to be implemented.`)} 
-                      className="text-black bg-transparent hover:text-indigo-600"
-                      title="Edit Banner"
-                    >
-                      <FaEdit size={18}/>
+                <div className="flex items-center space-x-3">
+
+                <button className='bg-transparent text-black'
+                onClick={() => navigate(`/admin/banner/edit/${banner._id}`)}>
+
+                      <FaEdit size={18}/>git
                     </button>
                     <Link 
                       to={`/admin/banner/preview/${banner._id}`} 
