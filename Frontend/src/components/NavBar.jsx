@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import { IoMenu } from "react-icons/io5";
 import { RxCross1, RxCross2 } from "react-icons/rx";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-// import { navItems } from "../utils/Elements";
 import { UserContext } from "../layout/UserLayout";
 import MobileMenu from "../reusables/MobileMenu";
 import { useGetItemQuery } from "../app/services/QuerySettings";
@@ -14,6 +13,7 @@ const NavBar = () => {
     { refetchOnMountOrArgChange: true }
   );
   
+
   console.log("navmenu:", rawNavItems);
   const [processedNavItems, setProcessedNavItems] = useState([]);
   const navigate = useNavigate();
@@ -91,14 +91,14 @@ const NavBar = () => {
                   </section>
                 </Link>
 
-                {item.dropdown && item.dropdown.length > 0 && activeDropdown === item._id && ( // Compare with _id
+                {item.dropdown && item.dropdown.length > 0 && activeDropdown === item._id && ( 
                   <div
                     className="absolute top-full left-0 mt-2 bg-white shadow-md rounded-md min-w-[10rem] z-10"
                     style={{ zIndex: 1000 }}
-                    onMouseEnter={() => handleMouseEnter(item._id)} // Pass _id
+                    onMouseEnter={() => handleMouseEnter(item._id)} 
                     onMouseLeave={handleMouseLeave}
                   >
-                    {item.dropdown.map((dropdownItem) => (
+                    {item.dropdown.map((dropdownItem) => (                                                                                                                                                                  
                       <Link
                         key={dropdownItem._id}
                         to={dropdownItem.path}

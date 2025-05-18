@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useGetBannerQuery, useDeleteBannerMutation } from '../../app/services/BannerApi';
-import { FaEdit, FaPlus, FaTrash, FaEye } from 'react-icons/fa'; 
+import { FaEdit, FaPlus, FaTrash} from 'react-icons/fa'; 
 import DeleteConfirmationModal from '../../reusables/ConfirmationModal';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -93,14 +93,16 @@ const BannerTable = () => {
                 <button className='bg-transparent text-black'
                 onClick={() => navigate(`/admin/banner/edit/${banner._id}`)}>
 
-                      <FaEdit size={18}/>git
+                      <FaEdit size={18}/>
                     </button>
-                    <Link 
+                    {/* <Link 
                       to={`/admin/banner/preview/${banner._id}`} 
                       target="_blank"
                       className="text-black bg-transparent hover:text-gray-600"
                       title="Preview Banner"
-                    ><FaEye size={18}/></Link>
+                    ><FaEye size={18}/></Link> */}
+
+
                     <button 
                       onClick={() => openDeleteModal(banner)} 
                       disabled={isDeleting} 

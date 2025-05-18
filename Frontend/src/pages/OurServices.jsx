@@ -1,12 +1,17 @@
 import React from "react";
 import InfoBar from "../reusables/InfoBar";
-import { cardDetails } from "../utils/Elements";
-import { FaArrowRight, FaPlay } from "react-icons/fa";
+import { FaArrowRight, FaPlay, FaServicestack } from "react-icons/fa"; // Added FaServicestack as example
 import { RxCross2 } from "react-icons/rx";
 import { useNavigate } from "react-router-dom";
+import { useGetItemQuery } from "../app/services/QuerySettings"; // Import the hook
 
 const OurServices = () => {
-  const navigate=useNavigate();
+  const navigate = useNavigate();
+  const { data: apiResponse, isLoading: isLoadingServices, isError: isErrorServices, error: servicesError } = useGetItemQuery(
+    { url: "/services/all" },
+    { refetchOnMountOrArgChange: true }
+  );
+
   const stats = [
     {
       title: "Best Talent Networking ",
@@ -27,9 +32,22 @@ const OurServices = () => {
   ];
 
   const [expandedItem, setExpandedItem] = React.useState(null);
-  const handleExpand = (item) => {
-    setExpandedItem(expandedItem === item.id ? null : item.id); 
+  const handleExpand = (itemId) => {
+    setExpandedItem(expandedItem === itemId ? null : itemId);
   };
+
+  if (isLoadingServices) {
+    // You might want a more integrated loading state within the page structure
+    return <div className="container text-center p-10">Loading services information...</div>;
+  }
+
+  if (isErrorServices) {
+    console.error("Error fetching services for OurServices page:", servicesError);
+    // return <div className="container text-center p-10 text-red-500">Error loading services. Please try again.</div>;
+  }
+
+  const servicesToDisplay = apiResponse?.data || [];
+
   return (
     <>
       <InfoBar title="Services" parentpath="Home" childpath="Services" />
@@ -52,51 +70,54 @@ const OurServices = () => {
             </span>
           </div>
           <div className=" grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mt-[2rem] md:mt-0 gap-6 md:w-[72%]">
-            {cardDetails.map((item, idx) => {
-        const isExpanded = expandedItem === item.id;     
+            {servicesToDisplay.length > 0 ? servicesToDisplay.map((item, idx) => {
+              const isExpanded = expandedItem === item._id;
 
-        return (
-          <section
-            className={`relative group cursor-pointer transition-all duration-500 transform ${
-              isExpanded
-                ? "col-span-full flex flex-col md:flex-row"
-                : expandedItem
-                ? "hidden"
-                : " hover:-translate-y-2"
-            }`}
-            key={item.id}     
-          >
-
-            {isExpanded ? (
-              <div className=" flex flex-col drop-shadow-md rounded-r-xl justify-center px-8 md:px-20 pb-8 md:pb-20 pt-5 bg-white bg-opacity-75 backdrop-blur-md relative flex-1">
-                <div className=" absolute right-2 top-3 bg-neutral-700 backdrop-blur-md p-2 rounded-full">
-                  <RxCross2
-                    onClick={() => handleExpand(item)}
-                    className="text-white text-[1.5rem]"
-                  />
-                </div>
-                <h1 className="text-neutral-200 text-right">0{idx + 1}</h1>
-
-                <h3 className="text-2xl text-indigo-400 mb-5">
-                {item.title}
-                </h3>
-                <p className="mb-8">{item.desc}</p>
-              </div>
-            ) : (
-              <div
-                  key={idx}
-                  className=" bg-white group hover:bg-indigo-400 drop-shadow-md border-t-2 border-gray-100 px-6 py-5 rounded duration-500 hover:rounded-2xl "
+              return (
+                <section
+                  className={`relative group cursor-pointer transition-all duration-500 transform ${
+                    isExpanded
+                      ? "col-span-full flex flex-col md:flex-row"
+                      : expandedItem && expandedItem !== item._id // Hide other items when one is expanded
+                      ? "hidden"
+                      : " hover:-translate-y-2"
+                  }`}
+                  key={item._id}
                 >
-                  <h2 className={`mb-4 ${item.color} group-hover:text-white `}>{item.icon}</h2>
-                  <p className=" mb-4 font-semibold group-hover:text-white">{item.title}</p>
-                  <p className=" mb-2 h-[5rem] caption group-hover:text-white">{item.summary}</p>
-                  <p className=" hover:translate-x-1.5 duration-300 caption group-hover:text-white text-indigo-400 flex items-center gap-3" onClick={() => handleExpand(item)}>Learn More
-                  <span><FaArrowRight className=" text-[1rem] "/></span></p>
-                </div>
+                  {isExpanded ? (
+                    <div className=" flex flex-col drop-shadow-md rounded-r-xl justify-center px-8 md:px-20 pb-8 md:pb-20 pt-5 bg-white bg-opacity-75 backdrop-blur-md relative flex-1">
+                      <div className=" absolute right-2 top-3 bg-neutral-700 backdrop-blur-md p-2 rounded-full">
+                        <RxCross2
+                          onClick={() => handleExpand(item._id)}
+                          className="text-white text-[1.5rem]"
+                        />
+                      </div>
+                      <h1 className="text-neutral-200 text-right">0{idx + 1}</h1>
+
+                      <h3 className="text-2xl text-indigo-400 mb-5">
+                        {item.title}
+                      </h3>
+                      {/* API provides 'desc' for description, 'summary' for short text */}
+                      <p className="mb-8">{item.desc || item.summary}</p>
+                    </div>
+                  ) : (
+                    <div
+                      className=" bg-white group hover:bg-indigo-400 drop-shadow-md border-t-2 border-gray-100 px-6 py-5 rounded duration-500 hover:rounded-2xl "
+                    >
+                      {/* API data for services doesn't include icon or specific colors. Using a default. */}
+                      <h2 className={`mb-4 text-indigo-500 group-hover:text-white text-3xl`}><FaServicestack /></h2> {/* Example Icon */}
+                      <p className=" mb-4 font-semibold group-hover:text-white">{item.title}</p>
+                      <p className=" mb-2 h-[5rem] caption group-hover:text-white line-clamp-3">{item.summary}</p>
+                      <p className=" hover:translate-x-1.5 duration-300 caption group-hover:text-white text-indigo-400 flex items-center gap-3" onClick={() => handleExpand(item._id)}>Learn More
+                        <span><FaArrowRight className=" text-[1rem] " /></span></p>
+                    </div>
+                  )}
+                </section>
+              );
+            }) : (
+              !isLoadingServices && <p className="col-span-full text-center text-gray-500">No services to display at the moment.</p>
             )}
-          </section>
-        );
-      })}
+            {isErrorServices && <p className="col-span-full text-center text-red-500">Could not load services.</p>}
           </div>
         </section>
       </section>

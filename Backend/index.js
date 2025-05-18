@@ -6,11 +6,12 @@ const app = express();
 const categoryRoute=require('./routes/categoryRoutes')
 const mediaRoute=require('./routes/mediaRoutes')
 const BannerRoutes=require('./routes/BannerRoutes')
+const serviceRoutes=require('./routes/ServiceRoutes')
 
 connectDB();
 app.use(cors({
   origin: ['http://localhost:5173','http://localhost:5174'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json({ limit: '20mb' }));
@@ -27,6 +28,7 @@ app.use('/categories',categoryRoute)
 app.use('/media',mediaRoute)
 app.use('/menu', require('./routes/menu'))
 app.use('/api/banner',BannerRoutes)
+app.use('/services',serviceRoutes)
 
 
 app.listen(3000, () => {

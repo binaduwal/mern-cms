@@ -5,7 +5,7 @@ const serviceController = require('../controller/ServiceController');
 router.post('/create',serviceController.createService);
 router.get('/all',serviceController.getAllServices);
 router.get('/:id',serviceController.getServiceById);
-router.put('/edit/:id',serviceController.updateService);
+router.patch('/edit/:id',serviceController.updateService);
 router.delete('/delete/:id',serviceController.deleteService);
 
 module.exports = router;

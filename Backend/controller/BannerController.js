@@ -50,10 +50,13 @@ const banner = await Banner.create({
 
 exports.getAllBanners = async (req, res) => {
   try {
-    const banners = await Banner.find({}).sort({ createdAt: -1 });
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     res.setHeader('Pragma', 'no-cache'); 
     res.setHeader('Expires', '0'); 
+    const banners = await Banner.find({}).sort({ createdAt: -1 });
+    // res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    // res.setHeader('Pragma', 'no-cache'); 
+    // res.setHeader('Expires', '0'); 
     res.json(banners);
   } catch (error) {
     console.error('Error fetching banners:', error);
@@ -80,28 +83,38 @@ exports.getBannerById = async (req, res) => {
 };
 
 exports.updateBanner = async (req, res) => {
+  console.log('req.body:', req.body);
+  console.log('req.file:', req.file);
   try {
-    const { heading, paragraph, image, button } = req.body;
+    const { heading, paragraph, alt, btnText, btnLink } = req.body;
     const banner = await Banner.findById(req.params.id);
-
-    if (banner) {
-      banner.heading = heading || banner.heading;
-      banner.paragraph = paragraph || banner.paragraph; 
-      banner.image = image || banner.image;
-      banner.button = button || banner.button;
-
-      const updatedBanner = await banner.save();
-      res.json(updatedBanner);
-    } else {
-      res.status(404).json({ message: 'Banner not found' });
+    if (!banner) {
+      return res.status(404).json({ message: 'Banner not found' });
     }
-  } catch (error)
-  {
+
+    if (heading)   banner.heading   = heading;
+    if (paragraph) banner.paragraph = paragraph;
+    if (btnText)   banner.button.text = btnText;
+    if (btnLink)   banner.button.link = btnLink;
+
+    if (req.file) {
+      banner.image = {
+        url: `/uploads/banners/${req.file.filename}`,
+        alt: alt || banner.image.alt
+      };
+    } else if (alt) {
+      banner.image.alt = alt;
+    }
+
+    const updated = await banner.save();
+    return res.json(updated);
+
+  } catch (error) {
     console.error(`Error updating banner with ID ${req.params.id}:`, error);
-     if (error.kind === 'ObjectId') {
-        return res.status(404).json({ message: 'Banner not found (invalid ID format)' });
-    }
-    res.status(500).json({ message: 'Server error while updating banner', error: error.message });
+    return res.status(500).json({
+      message: 'Server error while updating banner',
+      error: error.message
+    });
   }
 };
 

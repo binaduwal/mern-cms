@@ -1,14 +1,17 @@
 import React from "react";
 import Slider from "react-slick";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
-import { useGetBannerQuery } from "../app/services/BannerApi";
+import { useGetItemQuery } from "../app/services/QuerySettings";
 
 const API_BASE = 'http://localhost:3000'; 
 
 const LandingBanner = React.memo( () => {
-    const { data: banners, isLoading, isError, error } = useGetBannerQuery();
+     const { data: banners, isLoading , isError,error} = useGetItemQuery(
+        { url: "/api/banner/all" },
+        { refetchOnMountOrArgChange: true }
+      );
 
-        console.log("Banners from API (LandingBanner):", JSON.stringify(banners, null, 2)); 
+        console.log("Banners from API (LandingBanner):",banners); 
 
   const NextArrow = ({ onClick }) => {
     return (
@@ -35,7 +38,7 @@ const LandingBanner = React.memo( () => {
   const settings = {
     dots: false,
     autoplay:true,
-    infinite: true,
+    infinite: false,
     speed: 500,
     slidesToShow: 1,
     autoplaySpeed: 3000,
@@ -60,7 +63,7 @@ const LandingBanner = React.memo( () => {
 
   return (
     <Slider {...settings} className="w-full ">
-      {banners.map((item) => {
+      {banners?.map((item) => {
         console.log("Processing banner item in map (LandingBanner):", JSON.stringify(item, null, 2)); 
 
         const imageUrl = item.image?.url ? `${API_BASE}${item.image.url}` : '/assets/placeholder_banner.jpg'; 

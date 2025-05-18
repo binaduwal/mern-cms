@@ -5,6 +5,9 @@ import { TbLayoutNavbar } from 'react-icons/tb';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { MdOutlineDashboardCustomize } from "react-icons/md";
 import { GoFileMedia } from "react-icons/go";
+import { VscLayoutMenubar } from "react-icons/vsc";
+import { PiCards } from "react-icons/pi";
+
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -30,7 +33,8 @@ const Sidebar = () => {
       {
        name: 'Menu',
        path: '/admin/menu',
-       icon: <IoSettingsOutline /> 
+       icon: <VscLayoutMenubar />
+
       },
       
       {
@@ -42,6 +46,16 @@ const Sidebar = () => {
        name: 'Banner',
        path: '/admin/banner',
        icon: <GoFileMedia /> 
+      },
+      {
+       name: 'Services',
+       path: '/admin/services',
+       icon: <PiCards />
+      },
+      {
+       name: 'Settings',
+       path: '/admin/settings',
+       icon: <IoSettingsOutline /> 
       },
 
     ]

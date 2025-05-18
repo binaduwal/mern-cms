@@ -79,6 +79,8 @@ export const navItems = [
   },
 ];
 
+
+
 export const cardDetails = [
   {
     id: 1,
