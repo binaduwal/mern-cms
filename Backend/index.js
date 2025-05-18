@@ -7,6 +7,7 @@ const categoryRoute=require('./routes/categoryRoutes')
 const mediaRoute=require('./routes/mediaRoutes')
 const BannerRoutes=require('./routes/BannerRoutes')
 const serviceRoutes=require('./routes/ServiceRoutes')
+const permissionRoutes=require('./routes/permissionRoutes')
 
 connectDB();
 app.use(cors({
@@ -29,6 +30,7 @@ app.use('/media',mediaRoute)
 app.use('/menu', require('./routes/menu'))
 app.use('/api/banner',BannerRoutes)
 app.use('/services',serviceRoutes)
+app.use('/permissions',permissionRoutes)
 
 
 app.listen(3000, () => {
