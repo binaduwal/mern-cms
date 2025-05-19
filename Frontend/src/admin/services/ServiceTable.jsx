@@ -89,10 +89,10 @@ if (isLoading) {
                 <Td>{index + 1}</Td>
                 <Td>{service.title}</Td>
                 <Td>
-                  <p className="line-clamp-1">{service.summary}</p>
+                  <p className="line-clamp-1 text-sm">{service.summary}</p>
                 </Td>
                 <Td>
-                  <p className="line-clamp-1">{service.desc || '-'}</p>
+                  <p className="line-clamp-1 text-sm">{service.desc || '-'}</p>
                 </Td>
                 <Td>
                   <div className="flex space-x-2">

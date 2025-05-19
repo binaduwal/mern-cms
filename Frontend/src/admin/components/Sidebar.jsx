@@ -7,6 +7,8 @@ import { MdOutlineDashboardCustomize } from "react-icons/md";
 import { GoFileMedia } from "react-icons/go";
 import { VscLayoutMenubar } from "react-icons/vsc";
 import { PiCards } from "react-icons/pi";
+import { GrUserAdmin } from "react-icons/gr";
+import { RiUserSettingsLine } from "react-icons/ri";
 
 
 const Sidebar = () => {
@@ -51,6 +53,16 @@ const Sidebar = () => {
        name: 'Services',
        path: '/admin/services',
        icon: <PiCards />
+      },
+      {
+       name: 'Permissions',
+       path: '/admin/permissions',
+       icon: <GrUserAdmin />
+      },
+      {
+       name: 'Roles',
+       path: '/admin/roles',
+    icon:<RiUserSettingsLine />
       },
       {
        name: 'Settings',

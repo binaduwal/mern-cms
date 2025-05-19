@@ -5,7 +5,7 @@ const permissionController = require('../controller/permissionController')
 router.get('/all', permissionController.getAllPermissions)
 router.get('/:id', permissionController.getPermissionById)
 router.post('/create', permissionController.createPermission)
-router.put('/edit/:id', permissionController.updatePermission)
+router.patch('/edit/:id', permissionController.updatePermission)
 router.delete('/delete/:id', permissionController.deletePermission)
 
 module.exports = router

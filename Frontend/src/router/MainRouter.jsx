@@ -15,18 +15,7 @@ import UserDashboard from "../Userdashboard/UserDashboard";
 import UserProfile from "../Userdashboard/UserProfile";
 import SignUp from "../auth/SignUp";
 import Landing from "../Userdashboard/Landing";
-// import AdminLayout from "../layout/AdminLayout";
-// import AdminDashboard from "../admins/AdminDashboard";
-// import AddBlogs from "../admins/AddBlogs";
-// import AddEvents from "../admins/AddEvents";
-// import BlogForm from "../admins/BlogForm";
-// import AppointmentDetails from "../admins/AppointmentDetails";
-// import EventForm from "../admins/EventForm";
-// import InquiryDetails from "../admins/InquiryDetails";
 import Login from "../auth/Login";
-// import AddUserForm from "../admins/AddUserForm";
-// import Permissions from "../admins/Permissions";
-// import Roles from "../admins/Roles";
 import OurServices from "../pages/OurServices";
 import CountryDetails from "../pages/CountryDetails";
 import SpecificCountry from "../components/SpecificCountry";
@@ -44,10 +33,9 @@ import BannerTable from "../admin/Banner/BannerTable";
 import Form from "../admin/Banner/Form";
 import ServiceCardForm from "../admin/services/ServiceCardForm";
 import ServiceTable from "../admin/services/ServiceTable";
-// import BannerPreview from "../admin/Banner/BannerPreview"; // Import the new preview component
-// import HomePageMgmt from "../admins/HomePageMgmt";
-// import Sidebar from "../admin/components/Sidebar";
-
+import PermissionList from "../admin/permissions/PermissionList";
+import RoleList from "../admin/roles/RoleList"
+import RoleForm from "../admin/roles/RoleForm"
 export const MainRouter=createBrowserRouter(
     createRoutesFromElements(
         <Route>
@@ -77,20 +65,6 @@ export const MainRouter=createBrowserRouter(
             <Route path="userprofile" element={<UserProfile/>}/>
             </Route>
             </Route>
-            {/* <Route path="admins" element={<AdminLayout/>}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="addblogs" element={<AddBlogs />} />
-            <Route path="blogform" element={<BlogForm />} />
-            <Route path="inquirydetails" element={<InquiryDetails />} />
-            <Route path="addevents" element={<AddEvents />} />
-            <Route path="eventform" element={<EventForm />} />
-            <Route path="appointment" element={<AppointmentDetails />} />
-            <Route path="createuser" element={<AddUserForm />} />       
-            <Route path="permissions" element={<Permissions />} />       
-            <Route path="roles" element={<Roles />} />       
-            <Route path="home-page" element={<HomePageMgmt />} />       
-            </Route> */}
-
             <Route path="admin" element={<AdminLayout/>} >
             <Route index element={<Dashboard/>} />
             <Route path="pages" element={<PageTable/>} />
@@ -107,6 +81,10 @@ export const MainRouter=createBrowserRouter(
             <Route path="services/add" element={<ServiceCardForm/>} />
             {/* <Route path="banner/preview/:id" element={<BannerPreview />} /> */}
             <Route path="/admin/banner/edit/:id" element={<Form/>} />
+            {/* <Route path="permission" element={<PermissionForm/>} /> */}
+            <Route path="permissions" element={<PermissionList/>} />
+            <Route path="roles" element={<RoleList/>} />
+            <Route path="add/roles" element={<RoleForm/>} />
 
             </Route>
 
