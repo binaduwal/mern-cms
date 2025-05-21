@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { IoHomeOutline, IoSettingsOutline } from 'react-icons/io5';
 import { TbLayoutNavbar } from 'react-icons/tb';
 import { GiHamburgerMenu } from 'react-icons/gi';
@@ -9,10 +9,34 @@ import { VscLayoutMenubar } from "react-icons/vsc";
 import { PiCards } from "react-icons/pi";
 import { GrUserAdmin } from "react-icons/gr";
 import { RiUserSettingsLine } from "react-icons/ri";
+import Swal from 'sweetalert2';
+import { PiSignOut } from 'react-icons/pi';
 
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSignOut = () => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will be signed out of your account!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, sign out!',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('role');
+        sessionStorage.removeItem('Admin Role');
+
+        Swal.fire('Signed Out!', 'You have been signed out.', 'success').then(() => {
+          navigate('/login');
+        });
+      }
+    });
+  };
 
   const navItems = [
     {
@@ -62,6 +86,11 @@ const Sidebar = () => {
       {
        name: 'Roles',
        path: '/admin/roles',
+    icon:<RiUserSettingsLine />
+      },
+      {
+       name: 'Users',
+       path: '/admin/users',
     icon:<RiUserSettingsLine />
       },
       {
@@ -122,8 +151,18 @@ const Sidebar = () => {
                   {item.icon}
                   {item.name}
                 </NavLink>
+                
               </li>
             ))}
+            <li>
+              <button
+                onClick={handleSignOut}
+                className="flex items-center gap-2 p-2 rounded-xl bg-transparent text-black hover:bg-gray-200 w-full text-left"
+              >
+                <PiSignOut />
+                Log Out
+              </button>
+            </li>
           </ul>
         </div>
       </div>

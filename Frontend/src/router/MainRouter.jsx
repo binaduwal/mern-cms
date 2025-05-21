@@ -11,10 +11,7 @@ import ContactUs from "../pages/ContactUs";
 import Blogs from "../pages/Blogs";
 import Events from "../pages/Events";
 import Blog_Events from "../pages/Blog_Events";
-import UserDashboard from "../Userdashboard/UserDashboard";
-import UserProfile from "../Userdashboard/UserProfile";
 import SignUp from "../auth/SignUp";
-import Landing from "../Userdashboard/Landing";
 import Login from "../auth/Login";
 import OurServices from "../pages/OurServices";
 import CountryDetails from "../pages/CountryDetails";
@@ -36,6 +33,9 @@ import ServiceTable from "../admin/services/ServiceTable";
 import PermissionList from "../admin/permissions/PermissionList";
 import RoleList from "../admin/roles/RoleList"
 import RoleForm from "../admin/roles/RoleForm"
+import UserForm from "../admin/users/UserForm";
+import SignOut from "../admin/components/SignOut";
+import ProtectedRoutes from "./ProtectedRoutes";
 export const MainRouter=createBrowserRouter(
     createRoutesFromElements(
         <Route>
@@ -60,33 +60,34 @@ export const MainRouter=createBrowserRouter(
             <Route path="events" element={<Events/>}/>
             </Route>
             <Route path="contactus" element={<ContactUs/>}/>
-            <Route path="userdashboard" element={<UserDashboard/>}>
-            <Route index element={<Landing/>}/>
-            <Route path="userprofile" element={<UserProfile/>}/>
-            </Route>
-            </Route>
-            <Route path="admin" element={<AdminLayout/>} >
-            <Route index element={<Dashboard/>} />
-            <Route path="pages" element={<PageTable/>} />
-            <Route path="add-pages" element={<AddPages/>} />
-            <Route path="pages/:slug" element={<PageView/>} />
-            <Route path="/admin/pages/edit/:slug" element={<EditPage/>} />
-            <Route path="categories" element={<CategoryForm/>} />
-            <Route path="category" element={<CategoryTable/>} />
-            <Route path="media" element={<MediaLibrary/>} />
-            <Route path="menu" element={<AddMenuItems/>} />
-            <Route path="banner/add" element={<Form/>} />
-            <Route path="banner" element={<BannerTable/>} />
-            <Route path="services" element={<ServiceTable/>} />
-            <Route path="services/add" element={<ServiceCardForm/>} />
-            {/* <Route path="banner/preview/:id" element={<BannerPreview />} /> */}
-            <Route path="/admin/banner/edit/:id" element={<Form/>} />
-            {/* <Route path="permission" element={<PermissionForm/>} /> */}
-            <Route path="permissions" element={<PermissionList/>} />
-            <Route path="roles" element={<RoleList/>} />
-            <Route path="add/roles" element={<RoleForm/>} />
 
             </Route>
+
+            {/* Protected Admin Routes */}
+                  <Route element={<ProtectedRoutes />}>
+
+              <Route path="admin" element={<AdminLayout/>} >
+                <Route index element={<Dashboard/>} />
+                <Route path="pages" element={<PageTable/>} />
+                <Route path="add-pages" element={<AddPages/>} />
+                <Route path="pages/:slug" element={<PageView/>} />
+                <Route path="/admin/pages/edit/:slug" element={<EditPage/>} />
+                <Route path="categories" element={<CategoryForm/>} />
+                <Route path="category" element={<CategoryTable/>} />
+                <Route path="media" element={<MediaLibrary/>} />
+                <Route path="menu" element={<AddMenuItems/>} />
+                <Route path="banner/add" element={<Form/>} />
+                <Route path="banner" element={<BannerTable/>} />
+                <Route path="services" element={<ServiceTable/>} />
+                <Route path="services/add" element={<ServiceCardForm/>} />
+                <Route path="/admin/banner/edit/:id" element={<Form/>} />
+                <Route path="permissions" element={<PermissionList/>} />
+                <Route path="roles" element={<RoleList/>} />
+                <Route path="add/roles" element={<RoleForm/>} />
+                <Route path="users" element={<UserForm/>} />
+                <Route path="logout" element={<SignOut/>} />
+              </Route>
+              </Route>
 
         </Route>
     )

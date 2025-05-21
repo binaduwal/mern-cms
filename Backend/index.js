@@ -9,6 +9,8 @@ const BannerRoutes=require('./routes/BannerRoutes')
 const serviceRoutes=require('./routes/ServiceRoutes')
 const permissionRoutes=require('./routes/permissionRoutes')
 const roleRoutes=require('./routes/roleRoutes')
+const authRoutes=require('./routes/authRoutes')
+require('dotenv').config();
 
 connectDB();
 app.use(cors({
@@ -33,7 +35,7 @@ app.use('/api/banner',BannerRoutes)
 app.use('/services',serviceRoutes)
 app.use('/permissions',permissionRoutes)
 app.use('/roles',roleRoutes)
-
+app.use('/auth',authRoutes)
 
 app.listen(3000, () => {
   console.log('Server is running on port 3000');

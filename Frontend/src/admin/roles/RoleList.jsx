@@ -69,7 +69,7 @@ const [searchTerm, setSearchTerm] = useState('');
   }
 
   if (isRolesError) {
-    return <div className="p-4 text-center text-red-500">Error fetching roles: {rolesError?.data?.message || rolesError?.error || 'Unknown error'}</div>;
+    return <div className="p-4 text-center text-red-500">Error fetching roles: {isRolesError?.data?.message || isRolesError?.error || 'Unknown error'}</div>;
   }
 
   const normalizeString = (str) => {

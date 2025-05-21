@@ -11,7 +11,7 @@ const LandingBanner = React.memo( () => {
         { refetchOnMountOrArgChange: true }
       );
 
-        console.log("Banners from API (LandingBanner):",banners); 
+        // console.log("Banners from API (LandingBanner):",banners); 
 
   const NextArrow = ({ onClick }) => {
     return (
@@ -64,10 +64,10 @@ const LandingBanner = React.memo( () => {
   return (
     <Slider {...settings} className="w-full ">
       {banners?.map((item) => {
-        console.log("Processing banner item in map (LandingBanner):", JSON.stringify(item, null, 2)); 
+        {/* console.log("Processing banner aitem in map (LandingBanner):", JSON.stringify(item, null, 2));  */}
 
         const imageUrl = item.image?.url ? `${API_BASE}${item.image.url}` : '/assets/placeholder_banner.jpg'; 
-        console.log(`LandingBanner - Item ID: ${item._id}, Heading: ${item.heading}, Paragraph: ${item.paragraph}, Image URL: ${imageUrl}`);
+        {/* console.log(`LandingBanner - Item ID: ${item._id}, Heading: ${item.heading}, Paragraph: ${item.paragraph}, Image URL: ${imageUrl}`); */}
 
         const buttonLink = item.button?.link 
           ? (item.button.link.startsWith('http') ? item.button.link : `http://${item.button.link}`)

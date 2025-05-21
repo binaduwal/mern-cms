@@ -14,7 +14,7 @@ const NavBar = () => {
   );
   
 
-  console.log("navmenu:", rawNavItems);
+  // console.log("navmenu:", rawNavItems);
   const [processedNavItems, setProcessedNavItems] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();

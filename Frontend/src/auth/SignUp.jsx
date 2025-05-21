@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import InputField from "../reusables/InputField";
 import { useDispatch } from "react-redux";
-import { signIn } from "../app/slices/SignupSlice";
-import { useNavigate } from "react-router-dom";
+import { signIn } from "../app/slices/SignupSlice"; 
+import { useNavigate, Link } from "react-router-dom";
 import { FaArrowRight } from "react-icons/fa";
 
 const SignUp = () => {
@@ -12,7 +12,9 @@ const SignUp = () => {
     first_name: "",
     last_name: "",
     email: "",
-    pass_word: "",
+    password: "", 
+    accept: false,
+    role: "user",
   });
 
   const handleChange = (e) => {
@@ -23,7 +25,9 @@ const SignUp = () => {
       return text.charAt(0).toUpperCase() + text.slice(1);
     };
 
-    if (name === "phone_number") {
+    if (name === "accept") {
+      setForm({ ...form, [name]: e.target.checked });
+    } else if (name === "phone_number") {
       // Phone number validation (only digits)
       if (/^\d{0,10}$/.test(value)) {
         setForm({ ...form, [name]: value });
@@ -41,34 +45,57 @@ const SignUp = () => {
   const validate = () => {
     const tempErrors = {};
 
-    if (form.first_name.length < 5 || form.first_name.length > 15) {
-      tempErrors.first_name = "Last Name must be betwen 5-15 characters.";
+    if (!form.first_name.trim()) {
+      tempErrors.first_name = "First name is required.";
+    } else if (form.first_name.length < 2 || form.first_name.length > 50) {
+      tempErrors.first_name = "First name must be between 2-50 characters.";
     }
-    if (form.last_name.length < 5 || form.last_name.length > 15) {
-      tempErrors.last_name = "Last Name must be betwen 5-15 characters.";
+    if (!form.last_name.trim()) {
+      tempErrors.last_name = "Last name is required.";
+    } else if (form.last_name.length < 2 || form.last_name.length > 50) {
+      tempErrors.last_name = "Last name must be between 2-50 characters.";
     }
-    // if (!/^\d{10}$/.test(form.phone_number)) {
-    //   tempErrors.phone_number = "Phone Number must be 10 digits.";
-    // }
-    if (!/(?=.*[A-Z])(?=.*[!@#$%^&*])/.test(form.pass_word)) {
-      tempErrors.pass_word =
-        "Password must contain at least one capital letter and one special character.";
+    if (!form.password) {
+      tempErrors.password = "Password is required.";
+    } else if (form.password.length < 6) {
+      tempErrors.password = "Password must be at least 6 characters.";
+    } else if (!/(?=.*[A-Z])(?=.*[!@#$%^&*])/.test(form.password)) {
+      tempErrors.password =
+        "Password must contain an uppercase letter and a special character.";
     }
-    // Email validation (must end with @gmail.com)
-    if (!/^[\w-\.]+@gmail\.com$/.test(form.email)) {
-      tempErrors.email = "Email must end with @gmail.com.";
+    // More general email validation
+    if (!form.email) {
+      tempErrors.email = "Email is required.";
+    } else if (!/^\S+@\S+\.\S+$/.test(form.email)) {
+      tempErrors.email = "Email is not valid.";
+    }
+    if (!form.accept) {
+      tempErrors.accept = "You must agree to the terms and conditions.";
     }
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
-      alert("Sign in successful");
-      dispatch(signIn(form));
-       navigate("/");
-      console.log("signup details:", form);
+      const userData = {
+        name: `${form.first_name} ${form.last_name}`,
+        email: form.email,
+        password: form.password,
+      };
+      dispatch(signIn(userData))
+        .unwrap() // Use unwrap to handle the promise from createAsyncThunk
+        .then((responsePayload) => {
+          // Assuming signIn thunk dispatches setCredentials on success
+          // and returns the backend response (user data + token)
+          alert("Sign up successful!"); // Or a more subtle success message/redirect
+          navigate("/"); // Navigate to home or dashboard
+        })
+        .catch((errorPayload) => {
+          setErrors({ api: errorPayload || "Sign up failed. Please try again." });
+          console.error("Signup error:", errorPayload);
+        });
     }
   };
   return (
@@ -99,7 +126,9 @@ const SignUp = () => {
           </h3>
           <p className=" mb-8">
             Already have an account?{" "}
-            <span className=" underline text-indigo-400">Log in</span>
+            <Link to="/login" className=" underline text-indigo-400 cursor-pointer">
+              Log in
+            </Link>
           </p>
           <form onSubmit={handleSubmit} className=" ">
             <div className="grid grid-cols-2 gap-4 ">
@@ -142,24 +171,34 @@ const SignUp = () => {
               <section className=" col-span-2">
                 <InputField
                   id="password"
-                  name="pass_word"
-                  value={form.pass_word}
+                  name="password" 
+                  value={form.password} 
                   placeholder="Password"
                   rounded="rounded-md"
                   type="password"
                   onChange={handleChange}
-                  error={errors.pass_word}
+                  error={errors.password} 
                 />
               </section>
-              <section className=" col-span-2 flex items-center gap-2 ">
-                <InputField type="checkbox" onChange={handleChange} name="accept" value={form.accept}/>
-                <p className=" font-poppins text-[13px] font-[500]">
-                  I agree to{" "}
-                  <span className=" text-indigo-500 underline">
-                    Terms & Condition
+              <section className="col-span-2">
+                <label htmlFor="acceptTerms" className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    id="acceptTerms"
+                    name="accept"
+                    checked={form.accept}
+                    onChange={handleChange}
+                    className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                  />
+                  <span className="font-poppins text-[13px] font-[500]">
+                    I agree to{" "}
+                    <span className="text-indigo-500 underline">Terms & Condition</span>
                   </span>
-                </p>
+                </label>
               </section>
+              {errors.accept && (
+                <p className="col-span-2 text-red-500 text-sm">{errors.accept}</p>
+              )}
             </div>
             <button
               className=" font-poppins font-[400] w-full rounded-lg mt-8 flex justify-center bg-gradient-to-r from-indigo-500 to-indigo-400 py-2.5 text-[1rem] "

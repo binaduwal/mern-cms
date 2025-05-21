@@ -68,10 +68,10 @@ const UserProfile = () => {
   const validate = () => {
     const tempErrors = {};
     if (
-      formDetails.first_name.length < 5 ||
+      formDetails.first_name.length < 4 ||
       formDetails.first_name.length > 15
     ) {
-      tempErrors.first_name = "Last Name must be betwen 5-15 characters.";
+      tempErrors.first_name = "First Name must be betwen 5-15 characters.";
     }
     if (formDetails.last_name.length < 5 || formDetails.last_name.length > 15) {
       tempErrors.last_name = "Last Name must be betwen 5-15 characters.";

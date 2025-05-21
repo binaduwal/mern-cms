@@ -20,7 +20,6 @@ exports.createRole = async (req, res) => {
     })
   
     await role.save()
-    console.log("Role saved in database:", role)
     res.status(201).json({ message: 'Role created successfully', role })
   } catch (error) {
     console.error("Error creating role:", error)

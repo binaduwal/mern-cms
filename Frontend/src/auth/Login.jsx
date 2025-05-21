@@ -1,43 +1,51 @@
 import React, { useState } from "react";
 import InputField from "../reusables/InputField";
 import { useDispatch } from "react-redux";
-import { signIn } from "../app/slices/SignupSlice";
 import { useNavigate } from "react-router-dom";
 import { FaArrowRight } from "react-icons/fa";
+import { useAddItemMutation } from "../app/services/QuerySettings";
+import { useFormik } from "formik";
+
+const initialValues = {
+  email: "",
+  password: "",
+};
 
 const Login = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [form, setForm] = useState({
-    email: "",
-    pass_word: "",
-  });
+  const [addItem, { error, isLoading }] = useAddItemMutation();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
-  };
+  const { values, errors, handleBlur, handleChange, handleSubmit, touched } =
+    useFormik({
+      initialValues,
+      validationSchema: "",
+      onSubmit: async (values, action) => {
+        try {
+          const response = await addItem({
+            url: "/auth/login",
+            data: values,
+          }).unwrap();
 
-  const [errors, setErrors] = useState({});
-  const validate = () => {
-    const tempErrors = {};
+          console.log("Response Data:", response);
+          const { token, user } = response;
+          sessionStorage.setItem("token", token);
+          sessionStorage.setItem("role", user.role);
+          sessionStorage.setItem("Admin Role", user.refRole.name);
 
-    // Email validation (must end with @gmail.com)
-    if (!/^[\w-\.]+@gmail\.com$/.test(form.email)) {
-      tempErrors.email = "Email must end with @gmail.com.";
-    }
-    setErrors(tempErrors);
-    return Object.keys(tempErrors).length === 0;
-  };
+          console.log("Login successful");
+          action.resetForm();
+          navigate("/admin");
+        } catch (err) {
+          console.error("Login error:", err.data.message);
+          alert(err.data.message);
+        }
+      },
+    });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (validate()) {
-      alert("Log in successful");
-      navigate("/");
-      console.log("Login details:", form);
-    }
-  };
+  if (isLoading) {
+    console.log("Submitting...");
+  }
+
   return (
     <div className=" 3xl:h-[60vh] content-center bg-indigo-50">
       <div className=" lg:flex lg:w-[60%] xl:w-[55%]  mx-auto bg-white drop-shadow-lg p-2 rounded-xl mt-10 mb-10 ">
@@ -73,7 +81,7 @@ const Login = () => {
           </h1>
           <p className=" font-[500] font-poppins mb-8">
             Don't have an account?{" "}
-            <span className=" underline text-indigo-400">Sign in</span>
+            <button onClick={() => navigate("/signup")} className=" underline bg-transparent text-indigo-400">Sign up</button>
           </p>
           <form onSubmit={handleSubmit} className=" ">
             <div className="grid grid-cols-2 gap-4 ">
@@ -81,7 +89,7 @@ const Login = () => {
                 <InputField
                   id="email"
                   name="email"
-                  value={form.email}
+                  value={values.email}
                   type="email"
                   onChange={handleChange}
                   rounded="rounded-md"
@@ -92,19 +100,19 @@ const Login = () => {
               <section className=" col-span-2">
                 <InputField
                   id="password"
-                  name="pass_word"
-                  value={form.pass_word}
+                  name="password"
+                  value={values.password}
                   placeholder="Password"
                   rounded="rounded-md"
                   type="password"
                   onChange={handleChange}
-                  error={errors.pass_word}
+                  error={errors.password}
                 />
               </section>
             </div>
             <button
               className=" font-poppins font-[400] w-full rounded-lg mt-8 flex justify-center bg-gradient-to-r from-indigo-500 to-indigo-400 py-2.5 text-[1rem] "
-              type=" submit"
+              type="submit"
             >
               Login{" "}
             </button>
