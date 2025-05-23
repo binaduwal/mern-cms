@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { IoMdCloseCircleOutline } from "react-icons/io";
 import ConfirmationModal from '../../reusables/ConfirmationModal';
 import { useGetItemQuery, useDeleteItemMutation } from '../../app/services/QuerySettings';
-import FeatureForm from './FeatureForm';
+import WingsForm from './WingsForm';
 import CustomTable from '../components/CustomTable';
 import SearchBar from '../../admin/components/SearchBar';
 
-const FeatureList = () => {
+const WingsList = () => {
   const [showCreate, setShowCreate] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [deleteData, setDeleteData] = useState(null);
@@ -20,7 +20,7 @@ const FeatureList = () => {
     isError: isDataError,
     refetch
   } = useGetItemQuery(
-    { url: "/features/all" },
+    { url: "/wings/all" },
     { refetchOnMountOrArgChange: true }
   );
 
@@ -58,7 +58,7 @@ const FeatureList = () => {
     if (deleteData) {
       try {
         await deleteDataMutation({
-          url: `/features/delete/${deleteData._id}`,
+          url: `/wings/delete/${deleteData._id}`,
         }).unwrap();
         refetch();
       } catch (error) {
@@ -95,7 +95,7 @@ const FeatureList = () => {
     <div className='bg-white min-h-screen w-full relative'>
       <div className='w-full p-2 bg-white rounded-lg'>
         <h2 className="text-xl font-semibold text-left text-black-600 mb-4">
-          Feature Management
+          Wings Management
         </h2>
 
         <div className="flex justify-between items-center mb-2">
@@ -105,7 +105,7 @@ const FeatureList = () => {
             className="bg-indigo-600 text-white p-2 rounded-xl hover:bg-indigo-700 transition duration-300 mb-6"
             onClick={() => setShowCreate(true)}
           >
-            + Create Feature
+            + Create Wings
           </button>
         </div>
 
@@ -118,14 +118,14 @@ const FeatureList = () => {
 
         {showCreate && (
           <div className="fixed inset-0 flex justify-center items-center z-50" style={{ backgroundColor: "rgba(0, 0, 0, 0.4)" }}>
-            <div className="relative bg-white p-8 rounded-xl shadow-2xl w-[500px] border border-gray-200">
+            <div className="relative bg-white p-8 rounded-xl shadow-2xl w-[800px] border border-gray-200">
               <button
                 className="absolute top-4 right-3 text-gray-600 bg-transparent hover:text-gray-800"
                 onClick={() => setShowCreate(false)}
               >
                 <IoMdCloseCircleOutline className="text-2xl" />
               </button>
-              <FeatureForm
+              <WingsForm
                 initialData={null}
                 onSave={handleCreated}
                 onClose={() => setShowCreate(false)}
@@ -142,16 +142,17 @@ const FeatureList = () => {
 
         {showEdit && (
           <div className="fixed inset-0 flex justify-center items-center z-50" style={{ backgroundColor: "rgba(0, 0, 0, 0.4)" }}>
-            <div className="relative bg-white p-8 rounded-xl shadow-2xl w-[700px] border border-gray-200">
+            <div className="relative bg-white p-8 rounded-xl  w-[800px] border border-gray-200">
               <button
-                className="absolute top-4 right-3 text-gray-600 hover:text-gray-800"
+                className="absolute top-4 right-3 bg-transparent text-gray-600 hover:text-gray-800"
                 onClick={() => setShowEdit(false)}
               >
                 <IoMdCloseCircleOutline className="text-2xl" />
               </button>
-              <FeatureForm
+              <WingsForm
                 initialData={editData}
                 onSave={handleUpdated}
+                isEdit={true}
                 onClose={() => setShowEdit(false)}
               />
             </div>
@@ -162,4 +163,4 @@ const FeatureList = () => {
   );
 };
 
-export default FeatureList;
+export default WingsList;

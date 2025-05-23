@@ -26,7 +26,7 @@ const cpUpload = upload.fields([
 router.post('/create', cpUpload, wingsController.createWing);
 router.get('/all', wingsController.getAllWings);
 router.get('/:id', wingsController.getWingById);
-router.put('/edit/:id', cpUpload, wingsController.updateWing);
+router.patch('/edit/:id', cpUpload, wingsController.updateWing);
 router.delete('/delete/:id', wingsController.deleteWing);
 
 module.exports = router;

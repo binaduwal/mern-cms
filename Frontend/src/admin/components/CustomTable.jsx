@@ -40,10 +40,18 @@ const CustomTable = ({ columns, data, onEdit, onDelete, renderActions }) => {
             <td
               key={col.key}
               className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 max-w-xs truncate"
-              title={col.render ? col.render(row) : row[col.key]}
+              title={
+                col.key === 'description'
+                  ? row[col.key]?.replace(/<[^>]+>/g, '')
+                  : typeof row[col.key] === 'string'
+                  ? row[col.key]
+                  : ''
+              }
             >
               {col.key === 'serialNumber'
                 ? index + 1
+                : col.key === 'description'
+                ? row[col.key]?.replace(/<[^>]+>/g, '') 
                 : col.render
                 ? col.render(row)
                 : row[col.key]}

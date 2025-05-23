@@ -1,8 +1,32 @@
 const Wings = require('../models/wingsModel');
 
+// exports.createWing = async (req, res) => {
+//   try {
+//     const wing = new Wings(req.body);
+//     await wing.save();
+//     res.status(201).json(wing);
+//   } catch (error) {
+//     res.status(400).json({ error: error.message });
+//   }
+// };
+
+
 exports.createWing = async (req, res) => {
   try {
-    const wing = new Wings(req.body);
+    const { title, description } = req.body;
+
+    const logo = req.files?.logo?.[0]?.path || '';
+    const coverImage = req.files?.coverImage?.[0]?.path || '';
+    const gallery = req.files?.gallery ? req.files.gallery.map(file => file.path) : [];
+
+    const wing = new Wings({
+      title,
+      description,
+      logo,
+      coverImage,
+      gallery
+    });
+
     await wing.save();
     res.status(201).json(wing);
   } catch (error) {
