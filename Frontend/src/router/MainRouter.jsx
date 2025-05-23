@@ -33,62 +33,70 @@ import ServiceTable from "../admin/services/ServiceTable";
 import PermissionList from "../admin/permissions/PermissionList";
 import RoleList from "../admin/roles/RoleList"
 import RoleForm from "../admin/roles/RoleForm"
-import UserForm from "../admin/users/UserForm";
 import SignOut from "../admin/components/SignOut";
 import ProtectedRoutes from "./ProtectedRoutes";
-export const MainRouter=createBrowserRouter(
-    createRoutesFromElements(
-        <Route>
-            <Route path="/" element={<UserLayout/>}>
-            <Route index element={<Home/>}/>
-            <Route path="signup" element={<SignUp/>}/>
-            <Route path="login" element={<Login/>}/>
-            <Route path="introduction" element={<Introduction/>}/>
-            <Route path="abroad" element={<StudyAbroad/>}/>
-            <Route path="countryinfo" element={<CountryDetails/>}>
-            <Route index element={<SpecificCountry/>}/>
-            </Route>
-            <Route path="test" element={<TestPreparation/>}>
-                <Route path="ielts" element={<Ielts/>}/>
-                <Route  path="pte" element={<Pte/>}/>
-                <Route  path="sat" element={<Sat/>}/>
-            </Route>
-            <Route path="services" element={<OurServices/>}/>
-
-            <Route element={<Blog_Events/>}>
-            <Route path="blogs" element={<Blogs/>}/>
-            <Route path="events" element={<Events/>}/>
-            </Route>
-            <Route path="contactus" element={<ContactUs/>}/>
-
-            </Route>
-
-            {/* Protected Admin Routes */}
-                  <Route element={<ProtectedRoutes />}>
-
-              <Route path="admin" element={<AdminLayout/>} >
-                <Route index element={<Dashboard/>} />
-                <Route path="pages" element={<PageTable/>} />
-                <Route path="add-pages" element={<AddPages/>} />
-                <Route path="pages/:slug" element={<PageView/>} />
-                <Route path="/admin/pages/edit/:slug" element={<EditPage/>} />
-                <Route path="categories" element={<CategoryForm/>} />
-                <Route path="category" element={<CategoryTable/>} />
-                <Route path="media" element={<MediaLibrary/>} />
-                <Route path="menu" element={<AddMenuItems/>} />
-                <Route path="banner/add" element={<Form/>} />
-                <Route path="banner" element={<BannerTable/>} />
-                <Route path="services" element={<ServiceTable/>} />
-                <Route path="services/add" element={<ServiceCardForm/>} />
-                <Route path="/admin/banner/edit/:id" element={<Form/>} />
-                <Route path="permissions" element={<PermissionList/>} />
-                <Route path="roles" element={<RoleList/>} />
-                <Route path="add/roles" element={<RoleForm/>} />
-                <Route path="users" element={<UserForm/>} />
-                <Route path="logout" element={<SignOut/>} />
-              </Route>
-              </Route>
-
+import AdminLogin from "../admin/components/AdminLogin";
+import UserList from "../admin/users/UserList";
+import AchievementList from "../admin/achievement/AchievementList";
+import FeatureList from "../admin/feature/FeatureList";
+// import PartnerForm from "../admin/partner/PartnerForm";
+import PartnerList from "../admin/partner/PartnerList";
+import JoinClubList from "../admin/joinclub/JoinClubList";
+export const MainRouter = createBrowserRouter(
+  createRoutesFromElements(
+    <Route>
+      <Route path="/" element={<UserLayout />}>
+        <Route index element={<Home />} />
+        <Route path="signup" element={<SignUp />} />
+        <Route path="login" element={<Login />} />
+        <Route path="introduction" element={<Introduction />} />
+        <Route path="abroad" element={<StudyAbroad />} />
+        <Route path="countryinfo" element={<CountryDetails />}>
+          <Route index element={<SpecificCountry />} />
         </Route>
-    )
-)
+        <Route path="test" element={<TestPreparation />}>
+          <Route path="ielts" element={<Ielts />} />
+          <Route path="pte" element={<Pte />} />
+          <Route path="sat" element={<Sat />} />
+        </Route>
+        <Route path="services" element={<OurServices />} />
+
+        <Route element={<Blog_Events />}>
+          <Route path="blogs" element={<Blogs />} />
+          <Route path="events" element={<Events />} />
+        </Route>
+        <Route path="contactus" element={<ContactUs />} />
+      </Route>
+      <Route path="/admin/login" element={<AdminLogin />} />
+
+      {/* Protected Admin Routes */}
+      <Route element={<ProtectedRoutes />}>
+        <Route path="admin" element={<AdminLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="pages" element={<PageTable />} />
+          <Route path="add-pages" element={<AddPages />} />
+          <Route path="pages/:slug" element={<PageView />} />
+          <Route path="/admin/pages/edit/:slug" element={<EditPage />} />
+          <Route path="categories" element={<CategoryForm />} />
+          <Route path="category" element={<CategoryTable />} />
+          <Route path="media" element={<MediaLibrary />} />
+          <Route path="menu" element={<AddMenuItems />} />
+          <Route path="banner/add" element={<Form />} />
+          <Route path="banner" element={<BannerTable />} />
+          <Route path="services" element={<ServiceTable />} />
+          <Route path="services/add" element={<ServiceCardForm />} />
+          <Route path="/admin/banner/edit/:id" element={<Form />} />
+          <Route path="permissions" element={<PermissionList />} />
+          <Route path="roles" element={<RoleList />} />
+          <Route path="add/roles" element={<RoleForm />} />
+          <Route path="logout" element={<SignOut />} />
+          <Route path="users" element={<UserList />} />
+          <Route path="components/achievements" element={<AchievementList />} />
+          <Route path="components/features" element={<FeatureList />} />
+          <Route path="components/partners" element={<PartnerList/>} />
+          <Route path="components/join" element={<JoinClubList/>} />
+        </Route>
+      </Route>
+    </Route>
+  )
+);

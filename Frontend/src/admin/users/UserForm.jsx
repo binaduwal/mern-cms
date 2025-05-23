@@ -9,7 +9,7 @@ const initialValues={
     role:'admin',
     email:"",
 }
-const UserForm = () => {
+const UserForm = ({ onSave}) => {
       const { data: apiResponse} = useGetItemQuery(
         { url: "/roles/all" },
         { refetchOnMountOrArgChange: true } 
@@ -18,6 +18,7 @@ const UserForm = () => {
       
 
    const roles = apiResponse || [];
+const [errorMessage, setErrorMessage] = useState('');
 
 
  const [addItem, { error, isLoading }] = useAddItemMutation();
@@ -35,11 +36,20 @@ const UserForm = () => {
           }).unwrap();
  
           console.log("Response Data:", response);
+          alert("Created Successfully");
           action.resetForm();
-          alert("Created Succesfully")
+          if(onSave)
+          {
+            onSave(response)
+          }
         } catch (err) {
           console.error(" error:", err);
        
+          if (err.status === 400 && err.data?.message) {
+      setErrorMessage(err.data.message);
+    } else {
+      setErrorMessage("An unexpected error occurred");
+    }
         }
         console.log("data:", values)
       },
@@ -51,7 +61,7 @@ const UserForm = () => {
 
   return (
 <>
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-sm">
+    <div className="max-w-md mx-auto mt-2 p-6 bg-white rounded-lg shadow-sm">
       <h2 className="text-2xl font-semibold text-gray-700 mb-6 text-center">Create User</h2>
     <form onSubmit={handleSubmit}>
 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
@@ -73,11 +83,19 @@ const UserForm = () => {
             placeholder='Enter your email'
             id='email'
             name='email'
-            onChange={handleChange}
+           onChange={(e) => {
+              handleChange(e);
+              setErrorMessage('');
+  }}
             value={values.email}
             required
             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none sm:text-sm mb-1"
         />
+
+        {errorMessage && (
+  <p className="text-red-500 text-sm mt-1">{errorMessage}</p>
+)}
+
         <label>Password</label>
         <input
             type='password'

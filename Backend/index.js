@@ -10,6 +10,12 @@ const serviceRoutes=require('./routes/ServiceRoutes')
 const permissionRoutes=require('./routes/permissionRoutes')
 const roleRoutes=require('./routes/roleRoutes')
 const authRoutes=require('./routes/authRoutes')
+const userRoutes=require('./routes/userRoutes')
+const featureRoutes = require("./routes/featureRoutes");
+const achievementRoute = require("./routes/achievementRoutes");
+const partnerRoute = require("./routes/partnerRoutes");
+const joinClubRoute = require("./routes/joinTheClubRoutes");
+const wingsRoute = require("./routes/wingsRoutes");
 require('dotenv').config();
 
 connectDB();
@@ -36,6 +42,13 @@ app.use('/services',serviceRoutes)
 app.use('/permissions',permissionRoutes)
 app.use('/roles',roleRoutes)
 app.use('/auth',authRoutes)
+app.use('/users',userRoutes)
+app.use('/features',featureRoutes);
+app.use('/achievements',achievementRoute);
+app.use('/partners',partnerRoute);
+app.use('/join',joinClubRoute);
+app.use('/wings',wingsRoute);
+
 
 app.listen(3000, () => {
   console.log('Server is running on port 3000');

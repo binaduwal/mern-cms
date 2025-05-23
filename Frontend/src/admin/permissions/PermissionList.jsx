@@ -65,8 +65,6 @@ const PermissionList = () => {
     setSearchTerm(e.target.value)
   }
 
-//   const normalizeString = (str) => 
-//     str.toLowerCase().replace(/[-\s]/g, '')
 
   const filteredPermissions = permissions.filter((perm) =>
     Object.values(perm).some(val => 

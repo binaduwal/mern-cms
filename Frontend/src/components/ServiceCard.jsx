@@ -17,7 +17,7 @@ const ServiceCard = () => {
   }
 
   if (isError) {
-    console.error("Error fetching services for ServiceCard:", error);
+    console.error("Error fetching services for ServiceCard:", isError);
     return <div className="text-center p-10 text-red-500">Error loading services.</div>;
   }
     
