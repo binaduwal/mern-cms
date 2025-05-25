@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import { useAddItemMutation, useGetItemQuery, useUpdateItemMutation } from "../../app/services/QuerySettings"
 
 
-const RoleForm = ({ onClose, onSave ,initialData }) => {
+const RoleForm = ({onSave ,initialData }) => {
 const [formData, setFormData] = useState({
     name: "",
     display_name: "",
@@ -99,12 +99,12 @@ if (initialData.permissions && Array.isArray(initialData.permissions)) {
         }).unwrap()
        }  
        
-              if (onSave) {
+        if (onSave) {
         onSave(result); 
        }
 
 
-        if (!isEditMode) {
+    if (!isEditMode) {
     setFormData({ name: "", display_name: "", description: "" });
     setSelectedPermissions([]);
 }

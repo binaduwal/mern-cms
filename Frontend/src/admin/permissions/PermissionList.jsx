@@ -15,11 +15,11 @@ const PermissionList = () => {
   const [searchTerm, setSearchTerm] = useState('')
 
 
-  const { data: apiResponse, isLoading, isError, error: queryError} = useGetItemQuery(
+  const { data: apiResponse, isLoading, isError, error: queryError,refetch} = useGetItemQuery(
     { url: "/permissions/all" },
     { refetchOnMountOrArgChange: true } 
   );
-  const [deletePermissionMutation, { isLoading: isDeleting }] = useDeleteItemMutation();
+  const [deletePermissionMutation] = useDeleteItemMutation();
 
   const permissions = apiResponse || [];
 
@@ -36,6 +36,7 @@ const PermissionList = () => {
     setShowCreatePermission(false)
     setShowEditPermission(false)
     setPermissionToEdit(null)
+    refetch();
   }
 
   const handleDeleteConfirmation = async () => {
@@ -43,6 +44,7 @@ const PermissionList = () => {
       try {
         await deletePermissionMutation({ url: `/permissions/delete/${permissionToDelete._id}` }).unwrap();
         console.log('Permission deleted successfully');
+        refetch()
       } catch (error) {
         console.error('Error deleting permission:', error)
       }
@@ -82,7 +84,7 @@ const PermissionList = () => {
 
           <div className="flex justify-between items-center mb-2">
 
-                      <input
+            <input
             type="text"
             placeholder="Search permissions..."
             value={searchTerm}
@@ -140,9 +142,9 @@ const PermissionList = () => {
 {(showCreatePermission || showEditPermission) && (
   <div className="fixed inset-0 flex justify-center items-center z-50"
    style={{ backgroundColor: "rgba(0, 0, 0, 0.4)" }} >
-    <div className="relative bg-white p-8 rounded-xl shadow-2xl w-[500px] border border-gray-200">
+    <div className="relative bg-white p-8 rounded-xl  shadow-2xl w-[500px] border border-gray-200">
       <button
-        className="absolute top-4 right-3 text-gray-600 hover:text-gray-800"
+        className="absolute top-4 right-3 text-gray-600 bg-transparent hover:text-gray-800"
         onClick={() => {
           setShowCreatePermission(false)
           setShowEditPermission(false)

@@ -14,7 +14,7 @@ const RolesList = () => {
   const [editRoleData, setEditRoleData] = useState(null);
 const [searchTerm, setSearchTerm] = useState('');
 
-  const { data: rolesData, isLoading:isLoadingRoles, isError:isRolesError} = useGetItemQuery(
+  const { data: rolesData, isLoading:isLoadingRoles, isError:isRolesError, refetch} = useGetItemQuery(
     { url: "/roles/all" },
     { refetchOnMountOrArgChange: true } 
   );
@@ -56,7 +56,7 @@ const [searchTerm, setSearchTerm] = useState('');
     if (DeleteRoleData) {
       try {
         await deleteRoleMutation({ url: `/roles/delete/${DeleteRoleData._id}` }).unwrap();
-
+        refetch()
       } catch (error) {
         console.error('Error deleting Role:', error);
       }
@@ -70,10 +70,6 @@ const [searchTerm, setSearchTerm] = useState('');
 
   if (isRolesError) {
     return <div className="p-4 text-center text-red-500">Error fetching roles: {isRolesError?.data?.message || isRolesError?.error || 'Unknown error'}</div>;
-  }
-
-  const normalizeString = (str) => {
-    return str ? str.toLowerCase().replace(/[-\s]/g, '') : '';
   }
 
   return (
@@ -128,7 +124,7 @@ const [searchTerm, setSearchTerm] = useState('');
           <div className="fixed inset-0 flex justify-center items-center z-50" style={{ backgroundColor: "rgba(0, 0, 0, 0.4)" }}>
             <div className="relative bg-white p-8 rounded-xl shadow-2xl w-[700px] border border-gray-200">
               <button
-                className="absolute top-4 right-3 text-gray-600 hover:text-gray-800"
+                className="absolute top-4 right-3 text-gray-600 bg-transparent hover:text-gray-800"
                 onClick={() => setShowCreateRole(false)}
               >
                 <IoMdCloseCircleOutline className="text-2xl" />
@@ -155,7 +151,7 @@ const [searchTerm, setSearchTerm] = useState('');
 
            <div className="relative bg-white p-8 rounded-xl shadow-2xl w-[700px] border border-gray-200">
               <button
-                className="absolute top-4 right-3 text-gray-600 hover:text-gray-800"
+                className="absolute top-4 right-3 text-gray-600 bg-transparent hover:text-gray-800"
                 onClick={() => setShowEditRole(false)}
               >
                 <IoMdCloseCircleOutline className="text-2xl" />

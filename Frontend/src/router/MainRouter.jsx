@@ -42,7 +42,6 @@ import FeatureList from "../admin/feature/FeatureList";
 // import PartnerForm from "../admin/partner/PartnerForm";
 import PartnerList from "../admin/partner/PartnerList";
 import JoinClubList from "../admin/joinclub/JoinClubList";
-import WingsForm from "../admin/wings/WingsForm";
 import WingsList from "../admin/wings/WingsList";
 export const MainRouter = createBrowserRouter(
   createRoutesFromElements(
@@ -97,7 +96,6 @@ export const MainRouter = createBrowserRouter(
           <Route path="components/features" element={<FeatureList />} />
           <Route path="components/partners" element={<PartnerList/>} />
           <Route path="components/join" element={<JoinClubList/>} />
-          {/* <Route path="components/wings" element={<WingsForm/>} /> */}
           <Route path="components/wings" element={<WingsList/>} />
         </Route>  
       </Route>

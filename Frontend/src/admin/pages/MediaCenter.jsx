@@ -1,257 +1,85 @@
-// import React, { useState, useRef, useEffect } from 'react';
-// import axios from 'axios';
-// import ImagePreview from '../media/ImagePreview';
-
-// export const MediaCenter = ({ onClose, onAdd }) => {
-//   const fileInputRef = useRef(null);
-//   const [images, setImages] = useState([]);
-//   const [selectedImage, setSelectedImage] = useState(null);
-//   const [hoveredImage, setHoveredImage] = useState(null);
-//   const [checkedImages, setCheckedImages] = useState([]);
-//   const [bulkMode, setBulkMode] = useState(false);
-
-//   useEffect(() => {
-//     fetchImages();
-//   }, []);
-
-//   const handleUploadClick = () => {
-//     fileInputRef.current.click();
-//   };
-
-//   const handleFileChange = e => {
-//     const file = e.target.files[0];
-//     if (file) {
-//       console.log('Selected file:', file);
-//       // your upload logic here...
-//     }
-//   };
-
-//   const fetchImages = async () => {
-//     try {
-//       const { data } = await axios.get('http://localhost:3000/media/all');
-//       setImages(data);
-//     } catch (err) {
-//       console.error('Error fetching images:', err);
-//     }
-//   };
-
-//   const handleUpdateImageData = (url, altText, title, description) => {
-//     setImages(prev =>
-//       prev.map(img =>
-//         img.url === url ? { ...img, altText, title, description } : img
-//       )
-//     );
-//   };
-
-//   const handleRemoveImage = filename => {
-//     setImages(prev => prev.filter(img => img.filename !== filename));
-//   };
-
-//   const toggleBulkMode = () => {
-//     setBulkMode(m => !m);
-//     setCheckedImages([]);
-//     setSelectedImage(null);
-//   };
-
-//   const toggleCheckbox = filename => {
-//     setCheckedImages(prev =>
-//       prev.includes(filename)
-//         ? prev.filter(name => name !== filename)
-//         : [...prev, filename]
-//     );
-//   };
-
-//   const handleAdd = () => {
-//     const picked = bulkMode
-//       ? images.filter(img => checkedImages.includes(img.filename))
-//       : selectedImage
-//       ? [selectedImage]
-//       : [];
-//     onAdd(picked);
-//     onClose();
-//   };
-
-//   return (
-//     <div className="bg-white p-4 flex flex-col space-y-4 h-full">
-//       <h2 className="text-xl font-semibold">Insert Media</h2>
-
-//       <div className="flex space-x-2">
-//         <button
-//           onClick={handleUploadClick}
-//           className="px-4 py-2 bg-transparent border text-black hover:text-indigo-700 transition"        >
-//           Upload from File
-//         </button>
-//         <button
-//           onClick={fetchImages}
-//           className="px-4 py-2 bg-transparent border text-indigo-500 hover:text-indigo-700 transition"        >
-//           Media Library
-//         </button>
-//       </div>
-
-//       <input
-//         type="file"
-//         ref={fileInputRef}
-//         onChange={handleFileChange}
-//         className="hidden"
-//       />
-
-//       <div className="flex justify-between">
-//         <button
-//           onClick={toggleBulkMode}
-//           className="px-4 py-2 rounded-xl bg-indigo-500 border text-white hover:bg-indigo-700 transition"        >
-//           {bulkMode ? 'Cancel Bulk' : 'Bulk select'}
-//         </button>
-//         <button
-//           onClick={handleAdd}
-//           disabled={
-//             bulkMode
-//               ? checkedImages.length === 0
-//               : selectedImage === null
-//           }
-//           className="px-4 py-2 rounded-xl bg-indigo-500 border text-white hover:bg-indigo-700 transition"        >
-//           Add
-//         </button>
-//       </div>
-
-//       <div className="grid grid-cols-6 gap-4 overflow-auto">
-//         {images.map(image => (
-//           <div
-//             key={image.filename}
-//             className="relative"
-//             onMouseEnter={() => setHoveredImage(image.filename)}
-//             onMouseLeave={() => setHoveredImage(null)}
-//             onClick={() => {
-//               if (!bulkMode) setSelectedImage(image);
-//             }}
-//           >
-//             {hoveredImage === image.filename && (
-//               <div
-//                 className="absolute top-2 left-2 z-10"
-//                 onClick={e => e.stopPropagation()}
-//               >
-//                 {bulkMode && (
-//                   <input
-//                     type="checkbox"
-//                     checked={checkedImages.includes(image.filename)}
-//                     onChange={() => toggleCheckbox(image.filename)}
-//                     className="w-5 h-5"
-//                   />
-//                 )}
-//               </div>
-//             )}
-
-//             <img
-//               src={image.url}
-//               alt={image.title}
-//               className={`w-full h-32 object-cover rounded ${
-//                 selectedImage?.filename === image.filename && !bulkMode
-//                   ? 'ring-2 ring-indigo-500'
-//                   : ''
-//               }`}
-//             />
-//           </div>
-//         ))}
-//       </div>
-
-//       {selectedImage && !bulkMode && (
-//         <ImagePreview
-//           image={selectedImage}
-//           onClose={() => setSelectedImage(null)}
-//           ononUpdatedData={handleUpdateImageData}
-//           onRemoveImage={handleRemoveImage}
-//         />
-//       )}
-//     </div>
-//   );
-// };
-
-// export default MediaCenter;
-
-
 import React, { useState, useRef, useEffect } from 'react';
-import axios from 'axios';
 import ImagePreview from '../media/ImagePreview';
-
+import { FaEye } from 'react-icons/fa';
+import {
+  useGetItemQuery,
+  useAddItemMutation,
+  useDeleteItemMutation,
+} from '../../app/services/QuerySettings'; 
+import { toast } from 'react-hot-toast';
 const MediaCenter = ({ onClose, onAdd }) => {
   const fileInputRef = useRef(null);
-  const [images, setImages] = useState([]);
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [hoveredImage, setHoveredImage] = useState(null);
+ const [previewTargetImage, setPreviewTargetImage] = useState(null); 
+  const [activeSelection, setActiveSelection] = useState(null);  const [hoveredImage, setHoveredImage] = useState(null);
   const [checkedImages, setCheckedImages] = useState([]);
   const [bulkMode, setBulkMode] = useState(false);
 
-  useEffect(() => {
-    fetchImages();
-  }, []);
+ const {
+    data: apiResponse,
+    isLoading: isLoadingMedia,
+    isError: isMediaError,
+    error: mediaError,
+    refetch: refetchMedia,
+  } = useGetItemQuery({ url: '/media/all' }, { refetchOnMountOrArgChange: true });
+
+  const [uploadFileMutation, { isLoading: isUploading }] = useAddItemMutation();
+  const [deleteFileMutation, { isLoading: isDeleting }] = useDeleteItemMutation();
+
+  const images = apiResponse || [];
+
 
   const handleUploadClick = () => {
     fileInputRef.current.click();
   };
 
   const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      console.log('Selected file:', file);
-      const formData = new FormData();
-      formData.append('file', file);
-      
-      try {
-        const { data } = await axios.post('http://localhost:3000/media/upload', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-        console.log('Upload response:', data);
-        fetchImages(); // Refresh the images list after upload
-      } catch (err) {
-        console.error('Upload error:', err);
-        alert('Failed to upload image: ' + err.message);
-      }
-    }
-  };
-  const fetchImages = async () => {
+const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('image', file);
+
     try {
-      const { data } = await axios.get('http://localhost:3000/media/all', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      console.log('Fetched images:', data);
-      setImages(data);
+      await uploadFileMutation({ url: '/media/upload', data: formData }).unwrap();
+      toast.success('File uploaded successfully!');
+      refetchMedia();
     } catch (err) {
-      console.error('Error fetching images:', err);
-      alert('Failed to fetch images');
+      console.error('Upload error:', err);
+      toast.error(err?.data?.message || err?.message || 'File upload failed.');
+          
     }
   };
 
   const handleUpdateImageData = (url, altText, title, description) => {
-    setImages(prev =>
-      prev.map(img =>
-        img.url === url ? { ...img, altText, title, description } : img
-      )
-    );
+    refetchMedia();
   };
 
   const handleRemoveImage = async (filename) => {
     try {
-      await axios.delete(`http://localhost:3000/media/${filename}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      setImages(prev => prev.filter(img => img.filename !== filename));
+await deleteFileMutation({ url: `/media/delete/${filename}` }).unwrap(); 
+      toast.success('Image removed successfully!');
+      refetchMedia();
+       if (previewTargetImage?.filename === filename) {
+        setPreviewTargetImage(null);
+      }
+      if (activeSelection?.filename === filename) {
+        setActiveSelection(null);
+      }
     } catch (err) {
       console.error('Error removing image:', err);
-      alert('Failed to remove image');
+      toast.error(err?.data?.message || 'Failed to remove image.');
     }
   };
 
   const toggleBulkMode = () => {
     if (bulkMode) {
       setCheckedImages([]);
-      setSelectedImage(null);
-    }
+setActiveSelection(null);
+      setPreviewTargetImage(null);
+    } else { 
+      setActiveSelection(null);
+      setPreviewTargetImage(null);
+    }    
     setBulkMode(prev => !prev);
   };
   
@@ -266,15 +94,15 @@ const MediaCenter = ({ onClose, onAdd }) => {
   const handleAdd = () => {
     const picked = bulkMode
       ? images.filter(img => checkedImages.includes(img.filename))
-      : selectedImage
-      ? [selectedImage]
+      : activeSelection 
+      ? [activeSelection ]
       : [];
     
     console.log('Selected images:', picked);
     
     if (typeof onAdd === 'function') {
       const processed = picked.map(img => ({
-        url: img.url.startsWith('http') ? img.url : `http://localhost:3000${img.url}`,
+        url: img.url,
         title: img.title || '',
         alt: img.altText || ''
       }));
@@ -283,7 +111,8 @@ const MediaCenter = ({ onClose, onAdd }) => {
     } else {
       console.log('onAdd function not available');
     }
-    
+    setActiveSelection(null);
+    setPreviewTargetImage(null);
     onClose();
   };
 
@@ -295,14 +124,14 @@ const MediaCenter = ({ onClose, onAdd }) => {
       <div className="flex space-x-2">
         <button
           onClick={handleUploadClick}
-          className="px-4 py-2 bg-transparent border text-black hover:text-indigo-700 transition"
-        >
-          Upload from File
+  className="px-4 py-2 bg-transparent border border-gray-300 text-black hover:border-indigo-500 hover:text-indigo-700 transition rounded-md"
+          disabled={isUploading}        >
+          {isUploading ? 'Uploading...' : 'Upload from File'}
         </button>
         <button
-          onClick={fetchImages}
-          className="px-4 py-2 bg-transparent border text-indigo-500 hover:text-indigo-700 transition"
-        >
+ onClick={refetchMedia} 
+          className="px-4 py-2 bg-transparent border border-indigo-500 text-indigo-500 hover:bg-indigo-50 transition rounded-md"
+          disabled={isLoadingMedia}        >
           Media Library
         </button>
       </div>
@@ -317,52 +146,69 @@ const MediaCenter = ({ onClose, onAdd }) => {
       <div className="flex justify-between">
         <button
           onClick={toggleBulkMode}
-          className="px-4 py-2 rounded-xl bg-indigo-500 border text-white hover:bg-indigo-700 transition"
-        >
-      {bulkMode ? 'Cancel' : 'Select Multiple'}
+className="px-4 py-2 rounded-md bg-indigo-500 border border-indigo-500 text-white hover:bg-indigo-600 transition"
+          disabled={isDeleting}        >
+      {bulkMode ? 'Cancel' : 'Select'}
   </button>
         <button
           onClick={handleAdd}
-          className="px-4 py-2 rounded-xl bg-indigo-500 border text-white hover:bg-indigo-700 transition"
-        >
+className="px-4 py-2 rounded-md bg-indigo-600 border border-indigo-600 text-white hover:bg-indigo-700 transition"
+          disabled={(!bulkMode && !activeSelection) || (bulkMode && checkedImages.length === 0) || isDeleting}
+               >
           Add
         </button>
       </div>
 
-      {selectedImage && !bulkMode && (
-        <ImagePreview
-          image={selectedImage}
-          onClose={() => setSelectedImage(null)}
-          onUpdatedData={handleUpdateImageData} 
-          onRemoveImage={handleRemoveImage}
-        />
-      )}
+          {isLoadingMedia && <p className="text-center py-4">Loading media...</p>}
+      {isMediaError && <p className="text-center py-4 text-red-500">Error fetching media: {mediaError?.data?.message || mediaError?.error}</p>}
+      {!isLoadingMedia && !isMediaError && images.length === 0 && <p className="text-center py-4">No media items in the library. Upload some!</p>}
 
-      <div className="grid grid-cols-6 gap-4 overflow-auto">
-        {images.map(image => (
-          <div
-            key={image.filename}
-            className="relative"
+
+
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 overflow-auto flex-grow">
+        {!isLoadingMedia && !isMediaError && images.map(image => (          <div
+ key={image.filename || image._id || image.url}            className="relative group cursor-pointer"
             onMouseEnter={() => setHoveredImage(image.filename)}
             onMouseLeave={() => setHoveredImage(null)}
             onClick={() => {
-              if (!bulkMode) setSelectedImage(image);
+               if (!bulkMode) {
+                setActiveSelection(image);
+              }
             }}
           >
-            {bulkMode && (
+            {!bulkMode && hoveredImage === image.filename && (
+              <div className="absolute top-1 right-1 opacity-100 transition-opacity duration-300">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setPreviewTargetImage(image);
+                    setActiveSelection(image); // Set image for preview
+                  }}
+                  className="p-1.5 bg-black bg-opacity-40 text-white rounded-full hover:bg-opacity-60 focus:outline-none transition-colors"
+                  aria-label="Preview image"
+                  title="Preview image"
+                >
+                  <FaEye size={18} />
+                </button>
+              </div>
+            )} 
+            
+
+             {bulkMode && (
               <input
                 type="checkbox"
                 checked={checkedImages.includes(image.filename)}
                 onChange={() => toggleCheckbox(image.filename)}
-                className="w-5 h-5"
+                className="absolute top-2 left-2 z-10 w-5 h-5"
               />
             )}
 
-            <img
+                       <img
               src={image.url}
               alt={image.title}
-              className={`w-full h-32 object-cover rounded ${
-                selectedImage?.filename === image.filename && !bulkMode
+              className={`w-full h-32 object-cover rounded-lg shadow-sm group-hover:shadow-md transition-shadow ${
+                activeSelection?.filename === image.filename && !bulkMode
                   ? 'ring-2 ring-indigo-500'
                   : ''
               }`}
@@ -371,10 +217,10 @@ const MediaCenter = ({ onClose, onAdd }) => {
         ))}
       </div>
 
-      {selectedImage && !bulkMode && (
+      {previewTargetImage && !bulkMode && (
         <ImagePreview
-          image={selectedImage}
-          onClose={() => setSelectedImage(null)}
+          image={previewTargetImage}
+          onClose={() => setPreviewTargetImage(null)}
           onUpdatedData={handleUpdateImageData} 
           onRemoveImage={handleRemoveImage}
         />

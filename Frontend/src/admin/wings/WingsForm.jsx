@@ -2,6 +2,8 @@ import React, { useState,useEffect } from "react"
 import { useAddItemMutation, useUpdateItemMutation } from "../../app/services/QuerySettings";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import PreviewImage from "../components/PreviewImage";
+import { useNavigate } from "react-router-dom";
 
 const WingsForm = ({ initialData = {}, isEdit = false,onSave }) => {
  const [formData, setFormData] = useState({
@@ -13,9 +15,12 @@ const WingsForm = ({ initialData = {}, isEdit = false,onSave }) => {
   });
   const [message, setMessage] = useState("")
   const [isEditMode, setIsEditMode] = useState(false)
+  const navigate=useNavigate()
 
   const [addData,] = useAddItemMutation()
   const [updateData,] = useUpdateItemMutation()
+const [logoPreview, setLogoPreview] = useState(initialData?.logo || "");
+const [coverPreview, setCoverPreview] = useState(initialData?.coverImage || "");
 
 
     useEffect(() => {
@@ -37,19 +42,41 @@ const WingsForm = ({ initialData = {}, isEdit = false,onSave }) => {
 
 
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target
+//   const handleChange = (e) => {
+//     const { name, value, files } = e.target
 
-    if (files) {
-      if (name === "gallery") {
-        setFormData((prev) => ({ ...prev, gallery: [...files] }))
-      } else {
-        setFormData((prev) => ({ ...prev, [name]: files[0] }))
-      }
+//     if (files) {
+//       if (name === "gallery") {
+//         setFormData((prev) => ({ ...prev, gallery: [...files] }))
+//       } else {
+//         setFormData((prev) => ({ ...prev, [name]: files[0] }))
+//       }
+//     } else {
+//       setFormData((prev) => ({ ...prev, [name]: value }))
+//     }
+//   }
+
+const handleChange = (e) => {
+  const { name, value, files } = e.target;
+
+  if (files) {
+    if (name === "gallery") {
+      setFormData((prev) => ({ ...prev, gallery: [...files] }));
     } else {
-      setFormData((prev) => ({ ...prev, [name]: value }))
+      setFormData((prev) => ({ ...prev, [name]: files[0] }));
+
+      if (name === "logo") {
+        setLogoPreview(URL.createObjectURL(files[0]));
+      }
+      if (name === "coverImage") {
+        setCoverPreview(URL.createObjectURL(files[0]));
+      }
     }
+  } else {
+    setFormData((prev) => ({ ...prev, [name]: value }));
   }
+};
+
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -81,7 +108,11 @@ const WingsForm = ({ initialData = {}, isEdit = false,onSave }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="w-full mx-auto p-6 bg-white rounded-lg ">
+    <form
+      onSubmit={handleSubmit}
+      className="w-full mx-auto p-6 bg-white rounded-lg overflow-y-auto"
+       style={{ maxHeight: '90vh' }}
+    >
       <h2 className="text-2xl font-bold mb-4 text-indigo-600">
         {isEdit ? "Edit Wings" : "Create New Wings"}
       </h2>
@@ -100,43 +131,43 @@ const WingsForm = ({ initialData = {}, isEdit = false,onSave }) => {
         />
       </div>
 
-      {/* <div className="mb-4">
-        <label className="block mb-1 text-gray-700 font-medium">Description</label>
-        <textarea
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-          className="w-full border border-gray-300 p-2 rounded focus:ring-indigo-500"
-          required
-        ></textarea>
-      </div> */}
 
       <div className="mb-4">
-  <label className="block mb-1 text-gray-700 font-medium">Description</label>
-  <ReactQuill
-    value={formData.description}
-    onChange={(value) =>
-      setFormData((prev) => ({ ...prev, description: value }))
-    }
-    theme="snow"
-    placeholder="Enter description here..."
-  />
-</div>
-
+        <label className="block mb-1 text-gray-700 font-medium">
+          Description
+        </label>
+        <ReactQuill
+          value={formData.description}
+          onChange={(value) =>
+            setFormData((prev) => ({ ...prev, description: value }))
+          }
+          theme="snow"
+          placeholder="Enter description here..."
+        />
+      </div>
 
       <div className="mb-4">
         <label className="block mb-1 text-gray-700 font-medium">Logo</label>
-        <input
+        {/* <input
           type="file"
           name="logo"
           accept="image/*"
           onChange={handleChange}
           className="w-full"
         />
+         */}
+         <button
+         onClick={() => {navigate('/admin/media')}}>
+            Upload from media center
+         </button>
+        <PreviewImage previewImage={logoPreview} imageFile={formData.logo} />
+
       </div>
 
       <div className="mb-4">
-        <label className="block mb-1 text-gray-700 font-medium">Cover Image</label>
+        <label className="block mb-1 text-gray-700 font-medium">
+          Cover Image
+        </label>
         <input
           type="file"
           name="coverImage"
@@ -144,10 +175,14 @@ const WingsForm = ({ initialData = {}, isEdit = false,onSave }) => {
           onChange={handleChange}
           className="w-full"
         />
+          <PreviewImage previewImage={coverPreview} imageFile={formData.coverImage} />
+
       </div>
 
       <div className="mb-4">
-        <label className="block mb-1 text-gray-700 font-medium">Gallery Images</label>
+        <label className="block mb-1 text-gray-700 font-medium">
+          Gallery Images
+        </label>
         <input
           type="file"
           name="gallery"
@@ -167,7 +202,7 @@ const WingsForm = ({ initialData = {}, isEdit = false,onSave }) => {
         </button>
       </div>
     </form>
-  )
+  );
 }
 
 export default WingsForm

@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react"
 import { useAddItemMutation, useUpdateItemMutation } from "../../app/services/QuerySettings"
+import PreviewImage from "../components/PreviewImage"
+import { useNavigate } from "react-router-dom"
+import Modal from 'react-modal';
+import { IoMdCloseCircleOutline } from "react-icons/io";
+import MediaCenter from "../pages/MediaCenter";
 
-const AchievementForm = ({ onClose, onSave ,initialData }) => {
+const FeatureForm  = ({ onClose, onSave ,initialData }) => {
 const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -9,9 +14,11 @@ const [formData, setFormData] = useState({
   })
     const [message, setMessage] = useState("")
   const [isEditMode, setIsEditMode] = useState(false)
-
+const navigate=useNavigate()
   const [addData, { isLoading: isAdding }] = useAddItemMutation()
   const [updateData, { isLoading: isUpdating }] = useUpdateItemMutation()
+const [iconPreview, setIconPreview] = useState("");
+  const [isMediaCenterOpen, setIsMediaCenterOpen] = useState(false);
 
     const isLoading = isAdding || isUpdating
 
@@ -31,11 +38,42 @@ const [formData, setFormData] = useState({
   }
   }, [initialData])
 
+  useEffect(() => {
+    let objectUrlToRevoke = null;
 
-  const handleChange=(e)=>{
-    const {name,value}=e.target
-    setFormData((prev)=>({...prev,[name]:value}))
+    if (formData.icon instanceof File) {
+      objectUrlToRevoke = URL.createObjectURL(formData.icon);
+      setIconPreview(objectUrlToRevoke);
+    } else if (typeof formData.icon === 'string' && formData.icon) {
+      setIconPreview(formData.icon); 
+    } else {
+      setIconPreview(""); 
+    }
+    return () => {
+      if (objectUrlToRevoke) {
+        URL.revokeObjectURL(objectUrlToRevoke);
+      }
+    };
+  }, [formData.icon]);
+
+const handleChange = (e)=>{
+const {name,value,files}=e.target
+if (name === "icon" && files && files.length > 0) {
+      const file = files[0];
+      setFormData((prev) => ({ ...prev, icon: file })); // Store the File object
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+}
+
+const handleIconSelectFromMediaCenter = (selectedMedia) => {
+  if (selectedMedia && selectedMedia.length > 0) {
+    const iconUrl = selectedMedia[0].url;
+      setFormData(prev => ({ ...prev, icon: iconUrl })); 
   }
+  setIsMediaCenterOpen(false);
+};
+
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -43,16 +81,33 @@ const [formData, setFormData] = useState({
     try {
         let result;
        if(isEditMode){
+        const submissionData = new FormData();
+        submissionData.append('title', formData.title);
+        submissionData.append('description', formData.description);
+        if (formData.icon instanceof File) {
+          submissionData.append('icon', formData.icon);
+        } else if (typeof formData.icon === 'string') {
+          submissionData.append('icon', formData.icon); 
+        }
        result = await updateData({
             url:`/features/edit/${initialData._id}`,
-            data:formData,
+            data:submissionData,
+            
         }).unwrap()
         setMessage("Data updated successfully!")
        }
        else{
+        const submissionData = new FormData();
+        submissionData.append('title', formData.title);
+        submissionData.append('description', formData.description);
+        if (formData.icon instanceof File) {
+          submissionData.append('icon', formData.icon);
+        } else if (typeof formData.icon === 'string' && formData.icon.trim() !== '') {
+          submissionData.append('icon', formData.icon);
+        }
        result = await addData({
             url:'/features/create',
-            data:formData,
+            data: submissionData 
         }).unwrap()
         setMessage("Data created successfully!")
        }
@@ -60,14 +115,15 @@ const [formData, setFormData] = useState({
        if (onSave) {
         onSave(result); 
        }
-    } catch(error) {
+
+      } catch(error) {
         console.error(`Error while ${isEditMode ? "updating" : "creating"} data`, error);
       setMessage(error?.data?.error || error?.data?.message || `Failed to ${isEditMode ? "update" : "create"} data.`)
     }
   }
 
   return (
-    <div className="p-4 bg-transparent w-full max-w-md ">
+    <div className="p-4 bg-transparent w-full max-w-md overflow-y-auto">
       <h1 className="text-xl font-semibold text-left text-indigo-600 mb-4">
         {isEditMode ? "Edit Features" : "Create New Features"}
       </h1>
@@ -114,13 +170,24 @@ const [formData, setFormData] = useState({
                       <label className="block text-gray-700 font-medium text-left">
             Icon
           </label>
-          <input
+          {/* <input
             type="file"
             name="icon"
-            value={formData.icon}
+            accept="image/*"
             onChange={handleChange}
             className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500"
-          />
+          /> */}
+
+<button
+            type="button"
+            onClick={() => setIsMediaCenterOpen(true)}
+            className="mb-2 px-4 py-2 border border-indigo-500 text-indigo-500 rounded-md hover:bg-indigo-50 text-sm"
+          >
+            Select from Media Center
+          </button>
+
+                  <PreviewImage previewImage={iconPreview} imageFile={formData.icon} />
+
         </div>
 
         
@@ -147,8 +214,27 @@ const [formData, setFormData] = useState({
           </button>
         </div>
       </form>
+            {isMediaCenterOpen && (
+        <Modal
+          isOpen={isMediaCenterOpen}
+          onRequestClose={() => setIsMediaCenterOpen(false)}
+          overlayClassName="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50"
+          className="bg-white rounded-xl shadow-2xl w-[90%] h-[90vh] max-w-6xl outline-none p-0"
+          appElement={document.getElementById('root')} // Important for accessibility
+        >
+          <div className="flex justify-end p-2"> {/* Added padding for the close button container */}
+            <button
+              onClick={() => setIsMediaCenterOpen(false)}
+              className="text-gray-500 hover:text-gray-800 bg-transparent"
+            >
+              <IoMdCloseCircleOutline size={23} />
+            </button>
+          </div>
+          <MediaCenter onClose={() => setIsMediaCenterOpen(false)} onAdd={handleIconSelectFromMediaCenter} />
+        </Modal>
+      )}
     </div>
   );
 }
 
-export default AchievementForm
+export default FeatureForm  

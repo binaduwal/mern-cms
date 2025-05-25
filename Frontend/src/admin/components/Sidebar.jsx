@@ -232,7 +232,7 @@ const Sidebar = () => {
     { name: 'Pages', path: '/admin/pages', icon: <TbLayoutNavbar /> },
     { name: 'Categories', path: '/admin/category', icon: <MdOutlineDashboardCustomize /> },
     { name: 'Menu', path: '/admin/menu', icon: <VscLayoutMenubar /> },
-    { name: 'Banners', path: '/admin/components', icon: <RiUserSettingsLine /> },
+    { name: 'Banners', path: '/admin/banner', icon: <RiUserSettingsLine /> },
     {
       name: 'Components',
       icon: <GoFileMedia />,

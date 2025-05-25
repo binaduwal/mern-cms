@@ -1,9 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
 import SearchBar from '../../reusables/SearchBar';
 import ImagePreview from './ImagePreview';
-
+import { FaEye } from 'react-icons/fa';
+import { 
+  useAddItemMutation,
+  useDeleteItemMutation,
+  useGetItemQuery, 
+} from '../../app/services/QuerySettings';
+import { toast } from 'react-hot-toast';
 const MediaLibrary = () => {
-  const [media, setMedia] = useState([]);
+  const [processedMedia, setProcessedMedia] = useState([]);
   const fileInputRef = useRef(null);
   const [selectedItems, setSelectedItems] = useState([]);
   const [bulkSelectMode, setBulkSelectMode] = useState(false);
@@ -11,9 +17,17 @@ const MediaLibrary = () => {
   const [previewImage, setPreviewImage] = useState(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
-  useEffect(() => {
-    fetchMedia();
-  }, []);
+ const { 
+    data: apiResponse, 
+    isLoading: isLoadingMedia, 
+    isError: isMediaError, 
+    error: mediaError, 
+    refetch: refetchMedia 
+  } = useGetItemQuery({ url: '/media/all' }, { refetchOnMountOrArgChange: true });
+
+  const [uploadFileMutation, { isLoading: isUploading }] = useAddItemMutation();
+  const [deleteFileMutation, { isLoading: isDeleting }] = useDeleteItemMutation();
+
 
 const getImageSize = (url) => {
   return new Promise((resolve, reject) => {
@@ -29,34 +43,40 @@ const getImageSize = (url) => {
   });
 };  
 
-const fetchMedia = async () => {
-  try {
-    const response = await fetch('http://localhost:3000/media/all');
-    const data = await response.json();
-    
-    const mediaWithSizes = await Promise.all(data.map(async (item) => {
-      try {
-        const size = await getImageSize(item.url);
-        return {
-          ...item,
-          width: size.width,
-          height: size.height,
-        };
-      } catch (error) {
-        console.error(`Failed to get size for ${item.url}:`, error);
-        return {
-          ...item,
-          width: null,
-          height: null,
-        };
-      }
-    }));
-
-    setMedia(mediaWithSizes);
-  } catch (error) {
-    console.error('Error fetching media:', error);
-  }
+const isValidImageUrl = (url) => {
+  if (typeof url !== 'string') return false;
+  return /\.(jpeg|jpg|gif|png|svg|webp)$/i.test(url);
 };
+
+
+useEffect(() => {
+  const processFetchedMedia = async () => {
+    if (apiResponse && Array.isArray(apiResponse)) {
+      const mediaWithSizes = await Promise.all(
+        apiResponse.map(async (item) => {
+          if (item.url && isValidImageUrl(item.url)) {
+            try {
+              const size = await getImageSize(item.url);
+              return { ...item, width: size.width, height: size.height };
+            } catch (error) {
+              return { ...item, width: null, height: null };
+            }
+          } else {
+            return { ...item, width: null, height: null };
+          }
+        })
+      );
+      setProcessedMedia(mediaWithSizes);
+    } else if (apiResponse) {
+      console.warn("API response for media is not an array:", apiResponse);
+      setProcessedMedia([]);
+    } else {
+      setProcessedMedia([]);
+    }
+  };
+
+  processFetchedMedia();
+}, [apiResponse]);
 
   const handleAddNewClick = () => {
     fileInputRef.current.click();
@@ -70,27 +90,24 @@ const fetchMedia = async () => {
     formData.append('image', file);
 
     try {
-      const response = await fetch('http://localhost:3000/media/upload', {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await response.json();
-      console.log(data); 
-
-      if (response.ok) {
-        setMedia((prevMedia) => [...prevMedia, {
-          filename: file.name,
-          url: data.imageUrl,
-          size: file.size,
-          altText: file.name,
-        }]);
-      } else {
-        console.error('File upload failed:', data.message);
-      }
+     await uploadFileMutation({ 
+        url: '/media/upload', 
+        data: formData,
+      }).unwrap();
+      toast.success('File uploaded successfully!');
+      refetchMedia(); 
     } catch (error) {
       console.error('Error uploading file:', error);
+      toast.error(error?.data?.message || error?.message || 'File upload failed.');
+
     }
   };
+
+  const filteredMedia = processedMedia.filter(item => 
+    (item.filename && item.filename.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (item.altText && item.altText.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (item.title && item.title.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
   const toggleSelectItem = (item) => {
     if (selectedItems.includes(item.url)) {
@@ -106,22 +123,26 @@ const fetchMedia = async () => {
   };
 
   const deleteSelectedItems = async () => {
+    if (selectedItems.length === 0) {
+      toast.error("No items selected for deletion.");
+      return;
+    }
+    const toastId = toast.loading("Deleting selected items...");
+    
     try {
       for (const url of selectedItems) {
         const filename = url.split('/').pop();
-        await fetch(`http://localhost:3000/media/delete/${filename}`, {
-          method: 'DELETE',
-        });
+        await deleteFileMutation({ url: `/media/delete/${filename}` }).unwrap();
       }
 
-      setMedia((prevMedia) =>
-        prevMedia.filter((item) => !selectedItems.includes(item.url))
-      );
-
+    toast.success('Selected items deleted successfully!', { id: toastId });
+      refetchMedia();
       setSelectedItems([]);
       setBulkSelectMode(false);
     } catch (error) {
       console.error('Error deleting files:', error);
+      toast.error(error?.data?.message || 'Failed to delete some items.', { id: toastId });
+
     }
   };
 
@@ -140,17 +161,18 @@ const fetchMedia = async () => {
   };
   
   const onUpdatedData = (url, newAltText,newTitle,newDescription) => {
-    setMedia((prevMedia) =>
+    setProcessedMedia((prevMedia) =>
       prevMedia.map((item) =>
         item.url === url ? { ...item, altText: newAltText,title: newTitle, description: newDescription   } : item
       )
     );
+    refetchMedia();
   };
 
-  const removeImage = (filename) => {
-    setMedia((prevImages) => prevImages.filter((image) => image.filename !== filename));
+const removeImage = (filename) => {
+    // setMedia((prevImages) => prevImages.filter((image) => image.filename !== filename));
+    refetchMedia();
   };
-
 
   return (
     <div className="p-6">
@@ -160,7 +182,7 @@ const fetchMedia = async () => {
           className="px-6 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all shadow-md"
           onClick={handleAddNewClick}
         >
-          + Add New
+          {isUploading ? 'Uploading...' : '+ Add New'}
         </button>
       </div>
 
@@ -170,6 +192,8 @@ const fetchMedia = async () => {
             <button
               onClick={deleteSelectedItems}
               className="bg-transparent border border-indigo-500 text-indigo-500 px-2 py-2 rounded-xl text-sm hover:bg-indigo-600 hover:text-white transition-all shadow-md"
+              disabled={isDeleting || selectedItems.length === 0}
+
             >
               Delete Permanently
             </button>
@@ -206,15 +230,19 @@ const fetchMedia = async () => {
         </div>
       )}
 
+            {isLoadingMedia && <p className="text-center py-4">Loading media...</p>}
+      {isMediaError && <p className="text-center py-4 text-red-500">Error fetching media: {mediaError?.data?.message || mediaError?.error}</p>}
+      {!isLoadingMedia && !isMediaError && filteredMedia.length === 0 && searchTerm && <p className="text-center py-4">No media found matching "{searchTerm}".</p>}
+      {!isLoadingMedia && !isMediaError && processedMedia.length === 0 && !searchTerm && <p className="text-center py-4">No media items in the library. Upload some!</p>}
+
+
+
+
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-        {media.map((item, index) => (
+        {!isLoadingMedia && !isMediaError && filteredMedia.map((item, index) => (
           <div
-            key={index}
-            className="group relative overflow-hidden rounded-lg shadow hover:shadow-lg transition-all bg-white cursor-pointer"
-            onClick={() => {
-              console.log('Clicked image URL:', item.url);
-              openPreview(item);
-            }}  
+        key={item._id || item.url || index}
+            className="group relative overflow-hidden rounded-lg shadow hover:shadow-lg transition-all bg-white"
           >
             {bulkSelectMode && (
               <input
@@ -230,8 +258,20 @@ const fetchMedia = async () => {
               alt={item.filename}
               className="w-full h-36 object-cover rounded-t-lg"
           />
-            <div className="absolute inset-0 bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center"></div>
-          </div>
+            <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openPreview(item);
+                }}
+                className="p-1.5 bg-black bg-opacity-40 text-white rounded-full hover:bg-opacity-60 focus:outline-none transition-colors"
+                aria-label="Preview image"
+                title="Preview image"
+              >
+                <FaEye size={18}/>
+              </button>
+            </div> 
+                     </div>
         ))}
       </div>
 

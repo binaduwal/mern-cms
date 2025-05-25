@@ -142,9 +142,9 @@ const FeatureList = () => {
 
         {showEdit && (
           <div className="fixed inset-0 flex justify-center items-center z-50" style={{ backgroundColor: "rgba(0, 0, 0, 0.4)" }}>
-            <div className="relative bg-white p-8 rounded-xl shadow-2xl w-[700px] border border-gray-200">
+            <div className="relative bg-white p-8 rounded-xl shadow-2xl w-[500px] border border-gray-200">
               <button
-                className="absolute top-4 right-3 text-gray-600 hover:text-gray-800"
+                className="absolute top-4 right-3 text-gray-600 bg-transparent hover:text-gray-800"
                 onClick={() => setShowEdit(false)}
               >
                 <IoMdCloseCircleOutline className="text-2xl" />

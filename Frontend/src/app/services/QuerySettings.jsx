@@ -26,7 +26,7 @@ export const querySlice = apiSlice.injectEndpoints({
       query: ({ url, data }) => ({
         url,
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        // headers: { "Content-Type": "application/json" },
         body: data,
       }),
       invalidatesTags: ["item"],
@@ -44,7 +44,7 @@ export const querySlice = apiSlice.injectEndpoints({
       query: ({ url, data }) => ({
         url: `${url}`,
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        // headers: { "Content-Type": "application/json" },
         body: data,
       }),
       invalidatesTags: ["item"],

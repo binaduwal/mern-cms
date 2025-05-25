@@ -24,15 +24,20 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
-app.use(express.json({ limit: '20mb' }));
-app.use(express.urlencoded({ limit: '20mb', extended: true }));
+
+app.use('/features',featureRoutes);
+
+app.use(express.json({ limit: '20mb' ,    type: 'application/json'
+}));
+app.use(express.urlencoded({ limit: '20mb', extended: true,    type: 'application/x-www-form-urlencoded'
+}));
 app.use('/uploads', express.static('uploads', {
   setHeaders: (res) => {
     res.set('Access-Control-Allow-Origin',  ['http://localhost:5173','http://localhost:5174']);
     res.set('Cache-Control', 'no-store, max-age=0');
     res.set('Cross-Origin-Resource-Policy', 'cross-origin');
   }}));
-
+  
 app.use('/pages',pagesRoute)
 app.use('/categories',categoryRoute)
 app.use('/media',mediaRoute)
@@ -43,7 +48,6 @@ app.use('/permissions',permissionRoutes)
 app.use('/roles',roleRoutes)
 app.use('/auth',authRoutes)
 app.use('/users',userRoutes)
-app.use('/features',featureRoutes);
 app.use('/achievements',achievementRoute);
 app.use('/partners',partnerRoute);
 app.use('/join',joinClubRoute);
