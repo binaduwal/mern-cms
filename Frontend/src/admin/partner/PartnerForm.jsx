@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useAddItemMutation, useUpdateItemMutation } from "../../app/services/QuerySettings";
+import {
+  useAddItemMutation,
+  useUpdateItemMutation,
+} from "../../app/services/QuerySettings";
 import MediaCenterModal from "../components/MediaCenterModal";
 import PreviewImage from "../components/PreviewImage";
 
@@ -35,19 +38,19 @@ const PartnerForm = ({ onClose, onSave, initialData }) => {
         name: "",
         description: "",
         status: "active",
-        logo:null
+        logo: null,
       });
       setIsEditMode(false);
     }
   }, [initialData]);
 
-   useEffect(() => {
+  useEffect(() => {
     let objectUrlToRevoke = null;
 
     if (formData.logo instanceof File) {
       objectUrlToRevoke = URL.createObjectURL(formData.logo);
       setLogoPreview(objectUrlToRevoke);
-    } else if (typeof formData.logo === 'string' && formData.logo) {
+    } else if (typeof formData.logo === "string" && formData.logo) {
       setLogoPreview(formData.logo);
     } else {
       setLogoPreview("");
@@ -72,49 +75,50 @@ const PartnerForm = ({ onClose, onSave, initialData }) => {
   const handleLogoSelectFromMediaCenter = (selectedMedia) => {
     if (selectedMedia && selectedMedia.length > 0) {
       const logoUrl = selectedMedia[0].url;
-      setFormData(prev => ({ ...prev, logo: logoUrl }));
+      setFormData((prev) => ({ ...prev, logo: logoUrl }));
     }
     setIsMediaCenterOpen(false);
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
- const submissionData = new FormData();
-    submissionData.append('name', formData.name);
-    submissionData.append('description', formData.description);
-    submissionData.append('status', formData.status);
+    const submissionData = new FormData();
+    submissionData.append("name", formData.name);
+    submissionData.append("description", formData.description);
+    submissionData.append("status", formData.status);
 
     if (formData.logo instanceof File) {
-      submissionData.append('logo', formData.logo);
-    } else if (typeof formData.logo === 'string' && formData.logo) {
-      submissionData.append('logo', formData.logo);
+      submissionData.append("logo", formData.logo);
+    } else if (typeof formData.logo === "string" && formData.logo) {
+      submissionData.append("logo", formData.logo);
     }
 
     try {
-        let result;
-       if(isEditMode){
-       result = await updateData({
-            url:`/partners/edit/${initialData._id}`,
-            data:submissionData,
-        }).unwrap()
-        setMessage("Data updated successfully!")
-       }
-       else{
-       result = await addData({
-            url:'/partners/create',
-            data:submissionData,
-        }).unwrap()
+      let result;
+      if (isEditMode) {
+        result = await updateData({
+          url: `/partners/edit/${initialData._id}`,
+          data: submissionData,
+        }).unwrap();
+        setMessage("Data updated successfully!");
+      } else {
+        result = await addData({
+          url: "/partners/create",
+          data: submissionData,
+        }).unwrap();
         console.log(result);
-        setMessage("Data created successfully!")
-       }
+        setMessage("Data created successfully!");
+      }
 
-       if (onSave) {
-        onSave(result); 
-       }
-    } catch(error) {
-      console.error(`Error while ${isEditMode ? "updating" : "creating"} partner`, error);
+      if (onSave) {
+        onSave(result);
+      }
+    } catch (error) {
+      console.error(
+        `Error while ${isEditMode ? "updating" : "creating"} partner`,
+        error
+      );
       setMessage(
         error?.data?.error ||
           error?.data?.message ||
@@ -143,7 +147,9 @@ const PartnerForm = ({ onClose, onSave, initialData }) => {
         )}
 
         <div>
-          <label className="block text-gray-700 font-medium text-left">Name</label>
+          <label className="block text-gray-700 font-medium text-left">
+            Name
+          </label>
           <input
             type="text"
             name="name"
@@ -155,7 +161,9 @@ const PartnerForm = ({ onClose, onSave, initialData }) => {
         </div>
 
         <div>
-          <label className="block text-gray-700 font-medium text-left">Description</label>
+          <label className="block text-gray-700 font-medium text-left">
+            Description
+          </label>
           <textarea
             name="description"
             placeholder="Enter description"
@@ -167,7 +175,9 @@ const PartnerForm = ({ onClose, onSave, initialData }) => {
         </div>
 
         <div>
-          <label className="block text-gray-700 font-medium text-left">Logo</label>
+          <label className="block text-gray-700 font-medium text-left">
+            Logo
+          </label>
           <button
             type="button"
             onClick={() => setIsMediaCenterOpen(true)}
@@ -176,11 +186,12 @@ const PartnerForm = ({ onClose, onSave, initialData }) => {
             Select from Media Center
           </button>
           <PreviewImage previewImage={logoPreview} imageFile={formData.logo} />
-
         </div>
 
         <div>
-          <label className="block text-gray-700 font-medium text-left">Status</label>
+          <label className="block text-gray-700 font-medium text-left">
+            Status
+          </label>
           <select
             name="status"
             value={formData.status}
@@ -218,7 +229,7 @@ const PartnerForm = ({ onClose, onSave, initialData }) => {
         isOpen={isMediaCenterOpen}
         onClose={() => setIsMediaCenterOpen(false)}
         onMediaSelect={handleLogoSelectFromMediaCenter}
-     />
+      />
     </div>
   );
 };

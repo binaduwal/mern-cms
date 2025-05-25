@@ -272,7 +272,7 @@ const Sidebar = () => {
       )}
 
       <div
-        className={`fixed top-0 left-0 h-full w-60 bg-white text-black p-2 shadow-md z-50 transition-transform duration-300 
+        className={`fixed top-0 left-0 h-full w-60 bg-white text-black p-2 z-50 transition-transform duration-300 
         ${isOpen ? 'translate-x-0' : '-translate-x-full'} 
         md:translate-x-0 md:static md:h-screen`}
       >

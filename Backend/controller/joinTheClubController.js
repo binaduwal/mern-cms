@@ -1,11 +1,11 @@
-const JoinTheClub = require('../models/joinTheClubModel');
+const JoinTheClub = require("../models/joinTheClubModel");
 
 exports.getAll = async (req, res) => {
   try {
     const items = await JoinTheClub.find();
     res.status(200).json(items);
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error });
+    res.status(500).json({ message: "Server error", error });
   }
 };
 
@@ -14,11 +14,11 @@ exports.getById = async (req, res) => {
   try {
     const item = await JoinTheClub.findById(req.params.id);
     if (!item) {
-      return res.status(404).json({ message: 'JoinTheClub item not found' });
+      return res.status(404).json({ message: "JoinTheClub item not found" });
     }
     res.status(200).json(item);
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error });
+    res.status(500).json({ message: "Server error", error });
   }
 };
 
@@ -29,24 +29,28 @@ exports.create = async (req, res) => {
     const savedItem = await newItem.save();
     res.status(201).json(savedItem);
   } catch (error) {
-    console.error('Validation Error Details:', JSON.stringify(error, null, 2));
-    res.status(400).json({ message: 'Validation error', error });
+    console.error("Validation Error Details:", JSON.stringify(error, null, 2));
+    res.status(400).json({ message: "Validation error", error });
   }
 };
 
 // Update a JoinTheClub document by ID
 exports.update = async (req, res) => {
   try {
-    const updatedItem = await JoinTheClub.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const updatedItem = await JoinTheClub.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
     if (!updatedItem) {
-      return res.status(404).json({ message: 'JoinTheClub item not found' });
+      return res.status(404).json({ message: "JoinTheClub item not found" });
     }
     res.status(200).json(updatedItem);
   } catch (error) {
-    res.status(400).json({ message: 'Validation error', error });
+    res.status(400).json({ message: "Validation error", error });
   }
 };
 
@@ -55,10 +59,10 @@ exports.delete = async (req, res) => {
   try {
     const deletedItem = await JoinTheClub.findByIdAndDelete(req.params.id);
     if (!deletedItem) {
-      return res.status(404).json({ message: 'JoinTheClub item not found' });
+      return res.status(404).json({ message: "JoinTheClub item not found" });
     }
-    res.status(200).json({ message: 'Deleted successfully' });
+    res.status(200).json({ message: "Deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error });
+    res.status(500).json({ message: "Server error", error });
   }
 };

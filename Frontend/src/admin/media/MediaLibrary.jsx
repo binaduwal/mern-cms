@@ -51,23 +51,22 @@ const isValidImageUrl = (url) => {
 
 useEffect(() => {
   const processFetchedMedia = async () => {
-    if (apiResponse && Array.isArray(apiResponse)) {
-      const mediaWithSizes = await Promise.all(
-        apiResponse.map(async (item) => {
-          if (item.url && isValidImageUrl(item.url)) {
-            try {
-              const size = await getImageSize(item.url);
-              return { ...item, width: size.width, height: size.height };
-            } catch (error) {
-              return { ...item, width: null, height: null };
-            }
-          } else {
-            return { ...item, width: null, height: null };
-          }
-        })
-      );
-      setProcessedMedia(mediaWithSizes);
-    } else if (apiResponse) {
+if (apiResponse && Array.isArray(apiResponse)) {
+  const imageFiles = apiResponse.filter(item => isValidImageUrl(item.url));
+  const mediaWithSizes = await Promise.all(
+    imageFiles.map(async (item) => {
+      try {
+        const size = await getImageSize(item.url);
+        return { ...item, width: size.width, height: size.height };
+      } catch (error) {
+        return { ...item, width: null, height: null };
+      }
+    })
+  );
+  setProcessedMedia(mediaWithSizes);
+}
+    
+    else if (apiResponse) {
       console.warn("API response for media is not an array:", apiResponse);
       setProcessedMedia([]);
     } else {

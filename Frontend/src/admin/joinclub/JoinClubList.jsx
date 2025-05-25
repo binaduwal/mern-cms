@@ -172,7 +172,7 @@ const filteredAchievements = achievements.filter((achievement) =>
           >
             <div className="relative bg-white p-8 rounded-xl shadow-2xl w-[700px] border border-gray-200">
               <button
-                className="absolute top-4 right-3 text-gray-600 hover:text-gray-800"
+                className="absolute top-4 right-3 text-gray-600 bg-transparent hover:text-gray-800"
                 onClick={() => setShowEditAchievement(false)}
               >
                 <IoMdCloseCircleOutline className="text-2xl" />

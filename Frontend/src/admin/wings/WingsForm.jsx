@@ -148,18 +148,18 @@ const handleChange = (e) => {
 
       <div className="mb-4">
         <label className="block mb-1 text-gray-700 font-medium">Logo</label>
-        {/* <input
+        <input
           type="file"
           name="logo"
           accept="image/*"
           onChange={handleChange}
           className="w-full"
         />
-         */}
-         <button
+        
+         {/* <button
          onClick={() => {navigate('/admin/media')}}>
             Upload from media center
-         </button>
+         </button> */}
         <PreviewImage previewImage={logoPreview} imageFile={formData.logo} />
 
       </div>
