@@ -7,8 +7,7 @@ import CustomTable from '../components/CustomTable';
 import SearchBar from '../../admin/components/SearchBar';
 
 const PartnerList = () => {
-  const [showCreate, setShowCreate] = useState(false);
-  const [showEdit, setShowEdit] = useState(false);
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [deleteData, setDeleteData] = useState(null);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [editData, setEditData] = useState(null);
@@ -26,33 +25,29 @@ const PartnerList = () => {
 
   const [deleteDataMutation] = useDeleteItemMutation();
 
-  const features = apiResponse || [];
-  console.log(features);
+  const partners = apiResponse?.data || [];
+  console.log(partners);
 
   const columns = [
     { label: "SN", key: "serialNumber" },
     { label: "Name", key: "name" },
     { label: "Description", key: "description" },
-    // {label:"Icon",key:"icon"},
   ];
 
-  const handleEdit = (feature) => {
-    setEditData(feature);
-    setShowEdit(true);
+  const handleEdit = (partner) => {
+    setEditData(partner);
+    setIsFormModalOpen(true);
   };
 
-  const handleUpdated = () => {
-    setShowEdit(false);
+  const handleFormSave  = () => {
+    setEditData(null); 
+    setIsFormModalOpen(false);
     refetch();
   };
 
-  const handleCreated = () => {
-    setShowCreate(false);
-    refetch();
-  };
 
-  const openDeleteModal = (feature) => {
-    setDeleteData(feature);
+  const openDeleteModal = (partner) => {
+    setDeleteData(partner);
     setShowDeleteConfirmation(true);
   };
 
@@ -76,11 +71,11 @@ const PartnerList = () => {
   };
 
 const filteredData = searchTerm
-  ? features.filter((feature) =>
-      feature.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      feature.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  ? partners.filter((partner) =>
+      partner.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      partner.description?.toLowerCase().includes(searchTerm.toLowerCase())
     )
-  : features;
+  : partners;
 
   if (isLoadingData) {
     return <div className="p-4 text-center">Loading data...</div>;
@@ -107,7 +102,9 @@ const filteredData = searchTerm
 
           <button
             className="bg-indigo-600 text-white p-2 rounded-xl hover:bg-indigo-700 transition duration-300 mb-6"
-            onClick={() => setShowCreate(true)}
+            onClick={() => {setEditData(null);
+                          setIsFormModalOpen(true);
+}}
           >
             + Create Partner
           </button>
@@ -120,20 +117,25 @@ const filteredData = searchTerm
           onDelete={openDeleteModal}
         />
 
-        {showCreate && (
-          <div className="fixed inset-0 flex justify-center items-center z-50" style={{ backgroundColor: "rgba(0, 0, 0, 0.4)" }}>
-            <div className="relative bg-white p-8 rounded-xl shadow-2xl w-[500px] border border-gray-200">
+        {isFormModalOpen && (
+          <div className="fixed inset-0 flex justify-center items-center z-50  " style={{ backgroundColor: "rgba(0, 0, 0, 0.4)" }}>
+            <div className={`relative bg-white p-8 rounded-xl shadow-2xl w-[${editData ? '700px' : '500px'}] border border-gray-200 max-h-[90vh] overflow-y-auto`}>
               <button
                 className="absolute top-4 right-3 text-gray-600 bg-transparent hover:text-gray-800"
-                onClick={() => setShowCreate(false)}
-              >
+                onClick={() => {
+                  setIsFormModalOpen(false);
+                  setEditData(null);
+                }}              >
                 <IoMdCloseCircleOutline className="text-2xl" />
               </button>
+
               <PartnerForm
-                initialData={null}
-                onSave={handleCreated}
-                onClose={() => setShowCreate(false)}
-              />
+initialData={editData}
+onSave={handleFormSave}         
+onClose={() => {
+                  setIsFormModalOpen(false);
+                  setEditData(null);
+                }}              />
             </div>
           </div>
         )}
@@ -144,23 +146,6 @@ const filteredData = searchTerm
           onConfirm={handleDelete}
         />
 
-        {showEdit && (
-          <div className="fixed inset-0 flex justify-center items-center z-50" style={{ backgroundColor: "rgba(0, 0, 0, 0.4)" }}>
-            <div className="relative bg-white p-8 rounded-xl shadow-2xl w-[700px] border border-gray-200">
-              <button
-                className="absolute top-4 right-3 text-gray-600 hover:text-gray-800"
-                onClick={() => setShowEdit(false)}
-              >
-                <IoMdCloseCircleOutline className="text-2xl" />
-              </button>
-              <PartnerForm
-                initialData={editData}
-                onSave={handleUpdated}
-                onClose={() => setShowEdit(false)}
-              />
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

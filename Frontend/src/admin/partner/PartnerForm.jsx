@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useAddItemMutation, useUpdateItemMutation } from "../../app/services/QuerySettings";
+import MediaCenterModal from "../components/MediaCenterModal";
+import PreviewImage from "../components/PreviewImage";
 
 const PartnerForm = ({ onClose, onSave, initialData }) => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    logo: "",
+    logo: "null",
     status: "active",
   });
 
   const [message, setMessage] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isMediaCenterOpen, setIsMediaCenterOpen] = useState(false);
+  const [logoPreview, setLogoPreview] = useState("");
 
   const [addData, { isLoading: isAdding }] = useAddItemMutation();
   const [updateData, { isLoading: isUpdating }] = useUpdateItemMutation();
@@ -23,6 +27,7 @@ const PartnerForm = ({ onClose, onSave, initialData }) => {
         name: initialData.name || "",
         description: initialData.description || "",
         status: initialData.status || "active",
+        logo: initialData.logo || "null",
       });
       setIsEditMode(true);
     } else {
@@ -30,41 +35,78 @@ const PartnerForm = ({ onClose, onSave, initialData }) => {
         name: "",
         description: "",
         status: "active",
+        logo:null
       });
       setIsEditMode(false);
     }
   }, [initialData]);
 
+   useEffect(() => {
+    let objectUrlToRevoke = null;
+
+    if (formData.logo instanceof File) {
+      objectUrlToRevoke = URL.createObjectURL(formData.logo);
+      setLogoPreview(objectUrlToRevoke);
+    } else if (typeof formData.logo === 'string' && formData.logo) {
+      setLogoPreview(formData.logo);
+    } else {
+      setLogoPreview("");
+    }
+    return () => {
+      if (objectUrlToRevoke) {
+        URL.revokeObjectURL(objectUrlToRevoke);
+      }
+    };
+  }, [formData.logo]);
+
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, files } = e.target;
+    if (name === "logo" && files && files.length > 0) {
+      const file = files[0];
+      setFormData((prev) => ({ ...prev, logo: file }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
-  // const handleFileChange = (e) => {
-  //   const file = e.target.files[0];
-  //   setLogoFile(file);
-  // };
+  const handleLogoSelectFromMediaCenter = (selectedMedia) => {
+    if (selectedMedia && selectedMedia.length > 0) {
+      const logoUrl = selectedMedia[0].url;
+      setFormData(prev => ({ ...prev, logo: logoUrl }));
+    }
+    setIsMediaCenterOpen(false);
+  };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
+ const submissionData = new FormData();
+    submissionData.append('name', formData.name);
+    submissionData.append('description', formData.description);
+    submissionData.append('status', formData.status);
+
+    if (formData.logo instanceof File) {
+      submissionData.append('logo', formData.logo);
+    } else if (typeof formData.logo === 'string' && formData.logo) {
+      submissionData.append('logo', formData.logo);
+    }
 
     try {
         let result;
        if(isEditMode){
        result = await updateData({
             url:`/partners/edit/${initialData._id}`,
-            data:formData,
+            data:submissionData,
         }).unwrap()
         setMessage("Data updated successfully!")
        }
        else{
        result = await addData({
             url:'/partners/create',
-            data:formData,
+            data:submissionData,
         }).unwrap()
         console.log(result);
-        alert("Success");
         setMessage("Data created successfully!")
        }
 
@@ -82,7 +124,7 @@ const PartnerForm = ({ onClose, onSave, initialData }) => {
   };
 
   return (
-    <div className="p-4 bg-transparent w-full max-w-md">
+    <div className="p-4 bg-transparent w-full max-w-md overflow-y-auto">
       <h1 className="text-xl font-semibold text-left text-indigo-600 mb-4">
         {isEditMode ? "Edit Partner" : "Create New Partner"}
       </h1>
@@ -126,12 +168,15 @@ const PartnerForm = ({ onClose, onSave, initialData }) => {
 
         <div>
           <label className="block text-gray-700 font-medium text-left">Logo</label>
-          <input
-            type="file"
-            name="logo"
-            // onChange={handleFileChange}
-            className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500"
-          />
+          <button
+            type="button"
+            onClick={() => setIsMediaCenterOpen(true)}
+            className="mb-2 px-4 py-2 border border-indigo-500 bg-transparent text-indigo-500 rounded-md hover:bg-indigo-200 text-sm"
+          >
+            Select from Media Center
+          </button>
+          <PreviewImage previewImage={logoPreview} imageFile={formData.logo} />
+
         </div>
 
         <div>
@@ -169,6 +214,11 @@ const PartnerForm = ({ onClose, onSave, initialData }) => {
           </button>
         </div>
       </form>
+      <MediaCenterModal
+        isOpen={isMediaCenterOpen}
+        onClose={() => setIsMediaCenterOpen(false)}
+        onMediaSelect={handleLogoSelectFromMediaCenter}
+     />
     </div>
   );
 };

@@ -2,9 +2,7 @@ import React, { useState, useEffect } from "react"
 import { useAddItemMutation, useUpdateItemMutation } from "../../app/services/QuerySettings"
 import PreviewImage from "../components/PreviewImage"
 import { useNavigate } from "react-router-dom"
-import Modal from 'react-modal';
-import { IoMdCloseCircleOutline } from "react-icons/io";
-import MediaCenter from "../pages/MediaCenter";
+import MediaCenterModal from "../components/MediaCenterModal";
 
 const FeatureForm  = ({ onClose, onSave ,initialData }) => {
 const [formData, setFormData] = useState({
@@ -60,7 +58,7 @@ const handleChange = (e)=>{
 const {name,value,files}=e.target
 if (name === "icon" && files && files.length > 0) {
       const file = files[0];
-      setFormData((prev) => ({ ...prev, icon: file })); // Store the File object
+      setFormData((prev) => ({ ...prev, icon: file })); 
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
@@ -170,18 +168,11 @@ const handleIconSelectFromMediaCenter = (selectedMedia) => {
                       <label className="block text-gray-700 font-medium text-left">
             Icon
           </label>
-          {/* <input
-            type="file"
-            name="icon"
-            accept="image/*"
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500"
-          /> */}
 
 <button
             type="button"
             onClick={() => setIsMediaCenterOpen(true)}
-            className="mb-2 px-4 py-2 border border-indigo-500 text-indigo-500 rounded-md hover:bg-indigo-50 text-sm"
+            className="mb-2 px-4 py-2 border border-indigo-500 bg-transparent text-indigo-500 rounded-md hover:bg-indigo-200 text-sm"
           >
             Select from Media Center
           </button>
@@ -214,25 +205,11 @@ const handleIconSelectFromMediaCenter = (selectedMedia) => {
           </button>
         </div>
       </form>
-            {isMediaCenterOpen && (
-        <Modal
-          isOpen={isMediaCenterOpen}
-          onRequestClose={() => setIsMediaCenterOpen(false)}
-          overlayClassName="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50"
-          className="bg-white rounded-xl shadow-2xl w-[90%] h-[90vh] max-w-6xl outline-none p-0"
-          appElement={document.getElementById('root')} // Important for accessibility
-        >
-          <div className="flex justify-end p-2"> {/* Added padding for the close button container */}
-            <button
-              onClick={() => setIsMediaCenterOpen(false)}
-              className="text-gray-500 hover:text-gray-800 bg-transparent"
-            >
-              <IoMdCloseCircleOutline size={23} />
-            </button>
-          </div>
-          <MediaCenter onClose={() => setIsMediaCenterOpen(false)} onAdd={handleIconSelectFromMediaCenter} />
-        </Modal>
-      )}
+      <MediaCenterModal
+        isOpen={isMediaCenterOpen}
+        onClose={() => setIsMediaCenterOpen(false)}
+        onMediaSelect={handleIconSelectFromMediaCenter}
+      />
     </div>
   );
 }
