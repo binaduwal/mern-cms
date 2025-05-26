@@ -16,6 +16,7 @@ const achievementRoute = require("./routes/achievementRoutes");
 const partnerRoute = require("./routes/partnerRoutes");
 const joinClubRoute = require("./routes/joinTheClubRoutes");
 const wingsRoute = require("./routes/wingsRoutes");
+const ctaRoute = require("./routes/callToActionRoutes");
 require('dotenv').config();
 
 connectDB();
@@ -52,6 +53,7 @@ app.use('/achievements',achievementRoute);
 app.use('/partners',partnerRoute);
 app.use('/join',joinClubRoute);
 app.use('/wings',wingsRoute);
+app.use('/cta',ctaRoute);
 
 
 app.listen(3000, () => {

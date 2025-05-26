@@ -1,4 +1,8 @@
-import { createBrowserRouter, createRoutesFromElements, Route } from "react-router-dom";
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  Route,
+} from "react-router-dom";
 import UserLayout from "../layout/UserLayout";
 import Home from "../pages/Home";
 import Introduction from "../pages/Introduction";
@@ -31,8 +35,8 @@ import Form from "../admin/Banner/Form";
 import ServiceCardForm from "../admin/services/ServiceCardForm";
 import ServiceTable from "../admin/services/ServiceTable";
 import PermissionList from "../admin/permissions/PermissionList";
-import RoleList from "../admin/roles/RoleList"
-import RoleForm from "../admin/roles/RoleForm"
+import RoleList from "../admin/roles/RoleList";
+import RoleForm from "../admin/roles/RoleForm";
 import SignOut from "../admin/components/SignOut";
 import ProtectedRoutes from "./ProtectedRoutes";
 import AdminLogin from "../admin/components/AdminLogin";
@@ -43,6 +47,7 @@ import FeatureList from "../admin/feature/FeatureList";
 import PartnerList from "../admin/partner/PartnerList";
 import JoinClubList from "../admin/joinclub/JoinClubList";
 import WingsList from "../admin/wings/WingsList";
+import CallToActionList from "../admin/callToAction/CallToActionList";
 export const MainRouter = createBrowserRouter(
   createRoutesFromElements(
     <Route>
@@ -94,10 +99,11 @@ export const MainRouter = createBrowserRouter(
           <Route path="users" element={<UserList />} />
           <Route path="components/achievements" element={<AchievementList />} />
           <Route path="components/features" element={<FeatureList />} />
-          <Route path="components/partners" element={<PartnerList/>} />
-          <Route path="components/join" element={<JoinClubList/>} />
-          <Route path="components/wings" element={<WingsList/>} />
-        </Route>  
+          <Route path="components/partners" element={<PartnerList />} />
+          <Route path="components/join" element={<JoinClubList />} />
+          <Route path="components/wings" element={<WingsList />} />
+          <Route path="components/cta" element={<CallToActionList />} />
+        </Route>
       </Route>
     </Route>
   )

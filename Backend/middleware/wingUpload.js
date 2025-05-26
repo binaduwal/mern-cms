@@ -1,49 +1,16 @@
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const createUploadMiddleware = require('./createUploadMiddleware');
 
-const wingUploadDir = path.join(__dirname, '..', 'uploads', 'wings');
+const wingFieldsConfig = [
+  { name: 'logo', maxCount: 1 },
+  { name: 'coverImage', maxCount: 1 },
+  { name: 'gallery', maxCount: 10 }
+];
 
-if (!fs.existsSync(wingUploadDir)) {
-    fs.mkdirSync(wingUploadDir, { recursive: true });
-    console.log(`Created directory: ${wingUploadDir}`);
-}
-
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, wingUploadDir); 
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        const extension = path.extname(file.originalname);
-        const safeOriginalName = file.originalname.replace(/[^a-zA-Z0-9._-]/g, '').replace(extension, '');
-        cb(null, safeOriginalName + '-' + uniqueSuffix + extension);
-    }
+const wingUpload = createUploadMiddleware({
+  directory: 'wings',
+  fieldName: wingFieldsConfig,
+  entityName: 'wing assets',
+  uploadType: 'fields'
 });
-
-const fileFilter = (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) { 
-        cb(null, true);
-    } else {
-        cb(new Error('Not an image! Please upload an image file for the wings.'), false);
-    }
-};
-
-const multerMiddleware = multer({
-    storage: storage,
-    fileFilter: fileFilter,
-    limits: { fileSize: 1024 * 1024 * 5 } // 5MB limit
-}).single('image'); 
-const wingUpload = (req, res, next) => {
-    multerMiddleware(req, res, (err) => {
-        console.log("req.body:", JSON.stringify(req.body, null, 2));
-        console.log("req.file:", req.file);
-        if (err) {
-            console.error("Multer error in custom middleware:", err);
-            return res.status(400).json({ message: err.message || 'File upload error' });
-        }
-        next(); 
-    });
-};
 
 module.exports = wingUpload;

@@ -1,4 +1,4 @@
-const createUploadMiddleware = require('./createUploadMiddleware'); // Assuming createUploadMiddleware.js is in the same directory
+const createUploadMiddleware = require('./createUploadMiddleware'); 
 
 const partnerUpload = createUploadMiddleware({
     directory: 'partners',      
