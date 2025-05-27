@@ -108,12 +108,17 @@ const filteredData = datas.filter((data) =>
         <div className="flex justify-between items-center mb-2">
         <SearchBar searchTerm={searchTerm} handleSearch={handleSearch} />
 
+
+          {
+            datas.length===0 && (
           <button
             className="bg-indigo-600 text-white p-2 rounded-xl hover:bg-indigo-700 transition duration-300 mb-6"
             onClick={() => setShowCreateForm(true)}
           >
             + Create  Call to Action
           </button>
+            )
+          }
 
         </div>
 

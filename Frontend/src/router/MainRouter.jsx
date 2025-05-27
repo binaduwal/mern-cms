@@ -48,6 +48,11 @@ import PartnerList from "../admin/partner/PartnerList";
 import JoinClubList from "../admin/joinclub/JoinClubList";
 import WingsList from "../admin/wings/WingsList";
 import CallToActionList from "../admin/callToAction/CallToActionList";
+import GameTypeList from "../admin/gameWeek/gameType/gameTypeList";
+import ClubList from "../admin/gameWeek/club/ClubList";
+import MatchList from "../admin/gameWeek/match/MatchList";
+
+
 export const MainRouter = createBrowserRouter(
   createRoutesFromElements(
     <Route>
@@ -103,6 +108,9 @@ export const MainRouter = createBrowserRouter(
           <Route path="components/join" element={<JoinClubList />} />
           <Route path="components/wings" element={<WingsList />} />
           <Route path="components/cta" element={<CallToActionList />} />
+          <Route path="match" element={<MatchList />} />
+          <Route path="game-type" element={<GameTypeList />} />
+          <Route path="club" element={<ClubList />} />
         </Route>
       </Route>
     </Route>

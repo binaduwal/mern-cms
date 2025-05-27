@@ -248,6 +248,9 @@ const Sidebar = () => {
         { name: 'Gallery', path: '/admin/components/gallery' },
       ]
     },
+    { name: 'Game Type', path: '/admin/game-type', },
+    { name: 'Club', path: '/admin/club', },
+    { name: 'Match', path: '/admin/match', },
     { name: 'Section', path: '/admin/sections', icon: <RiUserSettingsLine /> },
     { name: 'Media Center', path: '/admin/media', icon: <GoFileMedia /> },
     { name: 'Services', path: '/admin/services', icon: <PiCards /> },

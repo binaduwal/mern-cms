@@ -42,5 +42,4 @@ export const store = configureStore({
   }).concat(apiSlice.middleware),
  
 });
-// Enable refetching on focus and reconnect || caching
 setupListeners(store.dispatch);
