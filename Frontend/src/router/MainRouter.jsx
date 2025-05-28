@@ -51,7 +51,11 @@ import CallToActionList from "../admin/callToAction/CallToActionList";
 import GameTypeList from "../admin/gameWeek/gameType/gameTypeList";
 import ClubList from "../admin/gameWeek/club/ClubList";
 import MatchList from "../admin/gameWeek/match/MatchList";
-
+import EventForm from "../admin/event/EventForm";
+import EventList from "../admin/event/EventList";
+import GalleryForm from "../admin/gallery/GalleryForm";
+import GalleryPage from "../admin/gallery/GalleryPage";
+import TestForm from "../admin/gallery/TestForm";
 
 export const MainRouter = createBrowserRouter(
   createRoutesFromElements(
@@ -110,7 +114,13 @@ export const MainRouter = createBrowserRouter(
           <Route path="components/cta" element={<CallToActionList />} />
           <Route path="match" element={<MatchList />} />
           <Route path="game-type" element={<GameTypeList />} />
-          <Route path="club" element={<ClubList />} />
+          <Route path="clubs" element={<ClubList />} />
+          <Route path="components/events" element={<EventList/>} />
+          <Route path="events/form" element={<EventForm/>} />
+          <Route path="events/edit/:id" element={<EventForm />} />
+          <Route path="gallery" element={<GalleryForm />} />
+          <Route path="gallery/page" element={<GalleryPage />} />
+          <Route path="test" element={<TestForm />} />
         </Route>
       </Route>
     </Route>

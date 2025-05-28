@@ -20,6 +20,12 @@ const ctaRoute = require("./routes/callToActionRoutes");
 const clubRoute = require("./routes/clubRoutes");
 const matchTypeRoute=require("./routes/matchTypeRoutes")
 const gameTypeRoute=require("./routes/gameTypeRoutes")
+const eventRoute=require("./routes/eventRoutes")
+const galleryRoute=require("./routes/galleryRoutes")
+const testRoutes=require("./routes/testRoutes")
+
+require('dotenv').config();
+
 connectDB();
 app.use(cors({
   origin: ['http://localhost:5173','http://localhost:5174'],
@@ -58,6 +64,9 @@ app.use('/cta',ctaRoute);
 app.use('/club',clubRoute);
 app.use('/match',matchTypeRoute);
 app.use("/game-type", gameTypeRoute);
+app.use("/events", eventRoute);
+app.use("/gallery", galleryRoute);
+app.use("/test", testRoutes);
 
 app.listen(3000, () => {
   console.log('Server is running on port 3000');

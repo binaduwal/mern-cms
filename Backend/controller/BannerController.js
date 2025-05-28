@@ -54,9 +54,6 @@ exports.getAllBanners = async (req, res) => {
     res.setHeader('Pragma', 'no-cache'); 
     res.setHeader('Expires', '0'); 
     const banners = await Banner.find({}).sort({ createdAt: -1 });
-    // res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    // res.setHeader('Pragma', 'no-cache'); 
-    // res.setHeader('Expires', '0'); 
     res.json(banners);
   } catch (error) {
     console.error('Error fetching banners:', error);

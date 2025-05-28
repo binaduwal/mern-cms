@@ -6,7 +6,7 @@ dotenv.config();
 
 const seed = async () => {
   try {
-    await mongoose.connect('mongodb://localhost:27017/sysqube');
+    await mongoose.connect('mongodb://localhost:27017/sysqube');d
 
     const existing = await User.findOne({ email: "superadmin@example.com" });
 

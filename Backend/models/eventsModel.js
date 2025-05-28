@@ -20,14 +20,18 @@ const eventSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  location: {
-    type: String,
-    required: true,
-  },
+location: {
+ type: String, 
+ required: true 
+},
   attendees: {
-    type: String, 
+    type: Number, 
     required: true,
   },
-}, { timestamps: true });
+
+  image:{
+    type:String,
+  }
+});
 
 export default mongoose.model('Event', eventSchema);

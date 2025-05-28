@@ -249,7 +249,7 @@ const Sidebar = () => {
       ]
     },
     { name: 'Game Type', path: '/admin/game-type', },
-    { name: 'Club', path: '/admin/club', },
+    { name: 'Club', path: '/admin/clubs', },
     { name: 'Match', path: '/admin/match', },
     { name: 'Section', path: '/admin/sections', icon: <RiUserSettingsLine /> },
     { name: 'Media Center', path: '/admin/media', icon: <GoFileMedia /> },
