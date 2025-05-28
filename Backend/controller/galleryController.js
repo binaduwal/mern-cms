@@ -157,25 +157,45 @@ exports.updateGallery = async (req, res) => {
   }
 };
 
-exports.deleteGallery = async (req, res) => {
+// exports.deleteGallery = async (req, res) => {
+//   try {
+//     const gallery = await Gallery.findByIdAndDelete(req.params.id);
+//     if (!gallery) {
+//       return res.status(404).json({ message: 'Gallery not found' });
+//     }
+
+//     if (gallery.images && gallery.images.length > 0) {
+//       gallery.images.forEach(img => {
+//         if (img.url && !img.url.startsWith('http') && img.url.includes('/uploads/gallery/')) {
+//           deleteUploadedFile(img.url.substring(1));
+//         }
+//       });
+//     }
+
+//     res.json({ message: 'Gallery deleted successfully' });
+//   } catch (error) {
+//     console.error("Error deleting gallery:", error);
+//     res.status(500).json({ message: 'Error deleting gallery', error: error.message });
+//   }
+// };
+
+
+// DELETE /gallery/:id/deleteImage
+
+exports.deleteGalleryImage = async (req, res) => {
+  const { id } = req.params;
+  const { url } = req.body;
   try {
-    const gallery = await Gallery.findByIdAndDelete(req.params.id);
-    if (!gallery) {
-      return res.status(404).json({ message: 'Gallery not found' });
-    }
+    const gallery = await Gallery.findById(id);
+    if (!gallery) return res.status(404).send({ message: "Not found" });
 
-    if (gallery.images && gallery.images.length > 0) {
-      gallery.images.forEach(img => {
-        if (img.url && !img.url.startsWith('http') && img.url.includes('/uploads/gallery/')) {
-          deleteUploadedFile(img.url.substring(1));
-        }
-      });
-    }
+    gallery.images = gallery.images.filter(img => img.url !== url);
+    await gallery.save();
 
-    res.json({ message: 'Gallery deleted successfully' });
-  } catch (error) {
-    console.error("Error deleting gallery:", error);
-    res.status(500).json({ message: 'Error deleting gallery', error: error.message });
+
+    res.json(gallery);
+  } catch (err) {
+    res.status(500).send({ message: err.message });
   }
 };
 

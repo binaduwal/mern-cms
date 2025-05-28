@@ -57,6 +57,13 @@ export const querySlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["item"],
     }),
+    deleteImage: builder.mutation({
+      query: ({ galleryId, imageUrl }) => ({
+        url: `/gallery/${galleryId}/deleteImage`,
+        method: "DELETE",
+        body: { url: imageUrl },
+      }),
+    }),
   }),
 });
  
@@ -67,4 +74,5 @@ export const {
   useGetItemWithTokenQuery,
   useGetItemQuery,
   useGetItemByIdQuery,
+  useDeleteImageMutation, 
 } = querySlice;
