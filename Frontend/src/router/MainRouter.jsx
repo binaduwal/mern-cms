@@ -20,6 +20,8 @@ import Login from "../auth/Login";
 import OurServices from "../pages/OurServices";
 import CountryDetails from "../pages/CountryDetails";
 import SpecificCountry from "../components/SpecificCountry";
+
+// Admin
 import AdminLayout from "../admin/components/AdminLayout";
 import Dashboard from "../admin/components/Dashboard";
 import PageView from "../admin/pages/[slug]";
@@ -43,7 +45,6 @@ import AdminLogin from "../admin/components/AdminLogin";
 import UserList from "../admin/users/UserList";
 import AchievementList from "../admin/achievement/AchievementList";
 import FeatureList from "../admin/feature/FeatureList";
-// import PartnerForm from "../admin/partner/PartnerForm";
 import PartnerList from "../admin/partner/PartnerList";
 import JoinClubList from "../admin/joinclub/JoinClubList";
 import WingsList from "../admin/wings/WingsList";
@@ -53,9 +54,7 @@ import ClubList from "../admin/gameWeek/club/ClubList";
 import MatchList from "../admin/gameWeek/match/MatchList";
 import EventForm from "../admin/event/EventForm";
 import EventList from "../admin/event/EventList";
-import GalleryForm from "../admin/gallery/GalleryForm";
 import GalleryPage from "../admin/gallery/GalleryPage";
-import TestForm from "../admin/gallery/TestForm";
 
 export const MainRouter = createBrowserRouter(
   createRoutesFromElements(
@@ -82,6 +81,7 @@ export const MainRouter = createBrowserRouter(
         </Route>
         <Route path="contactus" element={<ContactUs />} />
       </Route>
+
       <Route path="/admin/login" element={<AdminLogin />} />
 
       {/* Protected Admin Routes */}
@@ -112,15 +112,13 @@ export const MainRouter = createBrowserRouter(
           <Route path="components/join" element={<JoinClubList />} />
           <Route path="components/wings" element={<WingsList />} />
           <Route path="components/cta" element={<CallToActionList />} />
+          <Route path="components/gallery" element={<GalleryPage />} />
           <Route path="match" element={<MatchList />} />
           <Route path="game-type" element={<GameTypeList />} />
           <Route path="clubs" element={<ClubList />} />
-          <Route path="components/events" element={<EventList/>} />
-          <Route path="events/form" element={<EventForm/>} />
+          <Route path="components/events" element={<EventList />} />
+          <Route path="events/form" element={<EventForm />} />
           <Route path="events/edit/:id" element={<EventForm />} />
-          <Route path="gallery" element={<GalleryForm />} />
-          <Route path="gallery/page" element={<GalleryPage />} />
-          <Route path="test" element={<TestForm />} />
         </Route>
       </Route>
     </Route>

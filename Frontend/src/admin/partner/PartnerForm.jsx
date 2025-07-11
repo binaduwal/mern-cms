@@ -160,7 +160,7 @@ const PartnerForm = ({ onClose, onSave, initialData }) => {
           />
         </div>
 
-        <div>
+        {/* <div>
           <label className="block text-gray-700 font-medium text-left">
             Description
           </label>
@@ -169,10 +169,9 @@ const PartnerForm = ({ onClose, onSave, initialData }) => {
             placeholder="Enter description"
             value={formData.description}
             onChange={handleChange}
-            required
             className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500"
           ></textarea>
-        </div>
+        </div> */}
 
         <div>
           <label className="block text-gray-700 font-medium text-left">

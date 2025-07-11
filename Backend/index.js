@@ -22,7 +22,6 @@ const matchTypeRoute=require("./routes/matchTypeRoutes")
 const gameTypeRoute=require("./routes/gameTypeRoutes")
 const eventRoute=require("./routes/eventRoutes")
 const galleryRoute=require("./routes/galleryRoutes")
-const testRoutes=require("./routes/testRoutes")
 
 require('dotenv').config();
 
@@ -50,7 +49,7 @@ app.use('/pages',pagesRoute)
 app.use('/categories',categoryRoute)
 app.use('/media',mediaRoute)
 app.use('/menu', require('./routes/menu'))
-app.use('/api/banner',BannerRoutes)
+app.use('banner',BannerRoutes)
 app.use('/services',serviceRoutes)
 app.use('/permissions',permissionRoutes)
 app.use('/roles',roleRoutes)
@@ -66,7 +65,6 @@ app.use('/match',matchTypeRoute);
 app.use("/game-type", gameTypeRoute);
 app.use("/events", eventRoute);
 app.use("/gallery", galleryRoute);
-app.use("/test", testRoutes);
 
 app.listen(3000, () => {
   console.log('Server is running on port 3000');
